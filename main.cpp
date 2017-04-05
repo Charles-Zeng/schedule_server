@@ -7,6 +7,7 @@
 #include "global/cmdParse.h"
 #include "global/shareMem.h"
 #include <wait.h>
+#include "logger/logger.h"
 
 int main(int argc, char* argv[])
 {
@@ -21,42 +22,42 @@ int main(int argc, char* argv[])
 
 	if(START == cmd)
 	{
-		if(pid = fork())	//¸¸½ø³Ì
+		if(pid = fork())	//çˆ¶è¿›ç¨‹
 		{
 			return 0;
 		}
-		else	//µÚÒ»×Ó½ø³Ì
+		else	//ç¬¬ä¸€å­è¿›ç¨‹
 		{
 			if(pid < 0)
 			{
-				printf("´´½¨µÚÒ»×Ó½ø³ÌÊ§°Ü\n");
+				printf("åˆ›å»ºç¬¬ä¸€å­è¿›ç¨‹å¤±è´¥\n");
 				return pid;
 			}
 		}
 		
-		//µÚÒ»×Ó½ø³ÌÖ´ĞĞ´úÂë
-		//µÚÒ»×Ó½ø³Ì³ÉÎªĞÂµÄ»á»°×é³¤ºÍ½ø³Ì×é³¤²¢Óë¿ØÖÆÖÕ¶Ë·ÖÀë
+		//ç¬¬ä¸€å­è¿›ç¨‹æ‰§è¡Œä»£ç 
+		//ç¬¬ä¸€å­è¿›ç¨‹æˆä¸ºæ–°çš„ä¼šè¯ç»„é•¿å’Œè¿›ç¨‹ç»„é•¿å¹¶ä¸æ§åˆ¶ç»ˆç«¯åˆ†ç¦»
 		setsid();
 
-		//´´½¨¹²ÏíÄÚ´æ
+		//åˆ›å»ºå…±äº«å†…å­˜
 		shm = create_share_memory(&smhid, 1);
 		if(!shm)
 		{
-			printf("´´½¨¹²ÏíÄÚ´æÊ§°Ü\n");
+			printf("åˆ›å»ºå…±äº«å†…å­˜å¤±è´¥\n");
 			return 0;
 		}
 
 		shm_st = (share_memory*)shm;
 		if(1 == shm_st->run && shm_st->last_access >= time(0) - 1)
 		{
-			printf("½ø³ÌÒÑ¾­ÔÚÔËĞĞ\n");
+			printf("è¿›ç¨‹å·²ç»åœ¨è¿è¡Œ\n");
 			return 0;
 		}
 		shm_st->run = 1;
 		shm_st->last_access = time(0);
 
 	FORK:
-		if((pid = fork()) > 0)	//µÚÒ»×Ó½ø³Ì(¼à¿Ø½ø³Ì)
+		if((pid = fork()) > 0)	//ç¬¬ä¸€å­è¿›ç¨‹(ç›‘æ§è¿›ç¨‹)
 		{
 			while(shm_st->run)
 			{
@@ -70,7 +71,7 @@ int main(int argc, char* argv[])
 
 			if(destroy_share_memory(shm, smhid) == -1)
 			{
-				printf("Ïú»Ù¹²ÏíÄÚ´æÊ§°Ü\n");
+				printf("é”€æ¯å…±äº«å†…å­˜å¤±è´¥\n");
 			}
 
 			return 0;
@@ -79,42 +80,45 @@ int main(int argc, char* argv[])
 		{
 			if(pid < 0)
 			{
-				printf("´´½¨ÒµÎñ½ø³ÌÊ§°Ü\n");
+				printf("åˆ›å»ºä¸šåŠ¡è¿›ç¨‹å¤±è´¥\n");
 				return pid;
 			}
 		}
 
-		//ÒµÎñ½ø³ÌÖ´ĞĞ´úÂë
+		//ä¸šåŠ¡è¿›ç¨‹æ‰§è¡Œä»£ç 
 		
-		printf("ÒµÎñ½ø³ÌÆô¶¯...\n");
+        CLogger::instance()->start_logger(1000, LOG_METHOD_CONSOLE | LOG_METHOD_FILE);
+        CLogger::instance()->write_log(LOG_LEVEL_INFO, "ä¸šåŠ¡è¿›ç¨‹å¯åŠ¨...");
 		while(shm_st->run)
 		{
 			sleep(1);
 		}
-		printf("ÒµÎñ½ø³ÌÒÑÍË³ö\n");
+		printf("ä¸šåŠ¡è¿›ç¨‹å·²é€€å‡º\n");
 	}
 	else if(SHUTDOWN == cmd)
 	{
-		printf("¹Ø±ÕÒµÎñ½ø³Ì...\n");
+        CLogger::instance()->write_log(LOG_LEVEL_INFO, "å…³é—­ä¸šåŠ¡è¿›ç¨‹...");
 		shm = create_share_memory(&smhid,0);
 		if(!shm)
 		{
-			printf("ÎŞ·¨ÕÒµ½¹²ÏíÄÚ´æ,¿ÉÄÜÒµÎñ½ø³ÌÒÑÍË³ö\n");
+			printf("æ— æ³•æ‰¾åˆ°å…±äº«å†…å­˜,å¯èƒ½ä¸šåŠ¡è¿›ç¨‹å·²é€€å‡º\n");
 			return 0;
 		}
 		shm_st = (share_memory*)shm;
 
 		if(0 == shm_st->run || shm_st->last_access < time(0) - 1)
 		{
-			printf("ÒµÎñ½ø³ÌÎ´ÔÚÔËĞĞ\n");
+			printf("ä¸šåŠ¡è¿›ç¨‹æœªåœ¨è¿è¡Œ\n");
 			return 0;
 		}
 
-		shm_st->run = 0;
+        shm_st->run = 0;
+        CLogger::instance()->write_log(LOG_LEVEL_INFO, "è¿›ç¨‹å·²ç»é€€å‡º");
+        CLogger::instance()->stop_logger();
 	}
 	else
 	{
-		printf("ÃüÁîĞĞ²ÎÊı·Ç·¨\n");
+		printf("å‘½ä»¤è¡Œå‚æ•°éæ³•\n");
 	}
 
 	return 0;

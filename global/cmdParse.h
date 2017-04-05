@@ -9,7 +9,7 @@
 
 static inline int cmdParse(int argc, char* argv[])
 {
-	char* opt = "su";
+	const char* opt = "su";
 	char ch;
 	while((ch = getopt(argc, argv, opt))!= -1)
 	{
