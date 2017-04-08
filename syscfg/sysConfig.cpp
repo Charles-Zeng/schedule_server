@@ -1,4 +1,4 @@
-#include "SysConfig.h"
+#include "sysConfig.h"
 #include "cfgReader.h"
 #include "../global/config.h"
 #include "../logger/logger.h"
@@ -23,29 +23,29 @@ bool CSysConfig::loadConfig()
 {
 	CCfgReader reader(CONF_FILE);
 
-	//读取http端口配置
+	//璇诲彇http绔彛閰嶇疆
 	if (!reader.getIntValue("httpsvr.port", m_instance.m_httpConfig.m_httpPort))
 	{
-		CLogger::instance()->write_log(LOG_LEVEL_ERR, "读取http服务器端口配置失败");
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "璇诲彇http鏈嶅姟鍣ㄧ鍙ｉ厤缃け璐?);
 		return false;
 	}
 
-	//读取数据库用户名
+	//璇诲彇鏁版嵁搴撶敤鎴峰悕
 	if(!reader.getStringValue("database.username", m_instance.m_dbConfig.m_username))
 	{
-		CLogger::instance()->write_log(LOG_LEVEL_ERR, "读取数据库用户名配置失败");
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "璇诲彇鏁版嵁搴撶敤鎴峰悕閰嶇疆澶辫触");
 		return false;
 	}
-	//读取数据库密码
+	//璇诲彇鏁版嵁搴撳瘑鐮?
 	if (!reader.getStringValue("database.password", m_instance.m_dbConfig.m_password))
 	{
-		CLogger::instance()->write_log(LOG_LEVEL_ERR, "读取数据库密码配置失败");
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "璇诲彇鏁版嵁搴撳瘑鐮侀厤缃け璐?);
 		return false;
 	}
-	//读取数据库连接字符串
+	//璇诲彇鏁版嵁搴撹繛鎺ュ瓧绗︿覆
 	if (!reader.getStringValue("database.connection", m_instance.m_dbConfig.m_connection))
 	{
-		CLogger::instance()->write_log(LOG_LEVEL_ERR, "读取数据库密码配置失败");
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "璇诲彇鏁版嵁搴撳瘑鐮侀厤缃け璐?);
 		return false;
 	}
 

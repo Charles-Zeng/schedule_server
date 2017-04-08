@@ -4,14 +4,14 @@
 
 typedef struct stHttpConfig
 {
-	int m_httpPort;	//http·şÎñ¶Ë¿Ú
+	int m_httpPort;	//httpæœåŠ¡ç«¯å£
 }HttpConfig;
 
 typedef struct stDbConfig
 {
-	std::string m_username;	//Êı¾İ¿âÓÃ»§Ãû
-	std::string m_password;	//Êı¾İ¿âÃÜÂë
-	std::string m_connection;	//Á¬½Ó×Ö·û´®
+	std::string m_username;	//æ•°æ®åº“ç”¨æˆ·å
+	std::string m_password;	//æ•°æ®åº“å¯†ç 
+	std::string m_connection;	//è¿æ¥å­—ç¬¦ä¸²
 }DbConfig;
 
 class CSysConfig
@@ -23,7 +23,7 @@ public:
 	virtual ~CSysConfig();
 	static CSysConfig& instance();
 	bool loadConfig();
-private:
+public:
 	HttpConfig m_httpConfig;
 	DbConfig m_dbConfig;
 };

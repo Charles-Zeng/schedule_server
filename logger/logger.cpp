@@ -305,4 +305,3 @@ void CLogger::set_log_debug(bool bDebug)
 {
 	m_bDebug = bDebug;
 }
-

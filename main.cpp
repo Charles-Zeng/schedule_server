@@ -8,7 +8,8 @@
 #include "global/shareMem.h"
 #include <wait.h>
 #include "logger/logger.h"
-#include "syscfg/SysConfig.h"
+#include "syscfg/sysConfig.h"
+#include "service/sysService.h"
 
 int main(int argc, char* argv[])
 {
@@ -95,6 +96,13 @@ int main(int argc, char* argv[])
 			printf("读取系统配置参数失败!");
 			shm_st->run = 0;
 		}
+		//启动业务
+		if (!CSysService::start())
+		{
+			CLogger::instance()->write_log(LOG_LEVEL_ERR, "创建系统业务失败!");
+			shm_st->run = 0;
+		}
+
 		while(shm_st->run)
 		{
 			sleep(1);
