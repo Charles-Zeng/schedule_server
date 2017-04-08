@@ -8,6 +8,7 @@
 #include "global/shareMem.h"
 #include <wait.h>
 #include "logger/logger.h"
+#include "syscfg/SysConfig.h"
 
 int main(int argc, char* argv[])
 {
@@ -22,7 +23,7 @@ int main(int argc, char* argv[])
 
 	if(START == cmd)
 	{
-		if(pid = fork())	//父进程
+		if(0 != (pid = fork()))	//父进程
 		{
 			return 0;
 		}
@@ -86,9 +87,14 @@ int main(int argc, char* argv[])
 		}
 
 		//业务进程执行代码
-		
         CLogger::instance()->start_logger(1000, LOG_METHOD_CONSOLE | LOG_METHOD_FILE);
         CLogger::instance()->write_log(LOG_LEVEL_INFO, "业务进程启动...");
+		//读取配置参数
+		if (!CSysConfig::instance().loadConfig())
+		{
+			printf("读取系统配置参数失败!");
+			shm_st->run = 0;
+		}
 		while(shm_st->run)
 		{
 			sleep(1);
@@ -114,7 +120,6 @@ int main(int argc, char* argv[])
 
         shm_st->run = 0;
         CLogger::instance()->write_log(LOG_LEVEL_INFO, "进程已经退出");
-        CLogger::instance()->stop_logger();
 	}
 	else
 	{

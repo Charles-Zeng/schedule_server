@@ -31,7 +31,7 @@ static inline unsigned int get_share_mem_key()
 	pid_t pid = getpid();
 	char proc[MAX_PATH_LEN] = {0};
 	char program[MAX_PATH_LEN] = {0};
-	size_t program_len = 0;
+	ssize_t program_len = 0;
 	sprintf(proc, "/proc/%d/exe", pid);
 	program_len = readlink(proc, program, sizeof(program));
 	if(-1 == program_len)
