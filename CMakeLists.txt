@@ -5,6 +5,9 @@ SET(CMAKE_CXX_FLAGS "-g -Wall -std=c++11")
 SET(CMAKE_CXX_FLAGS_DEBUG "-g -Wall -std=c++11")
 SET(CMAKE_CXX_FLAGS_RELEASE "-O2 -Wall -std=c++11")
 
+INCLUDE_DIRECTORIES(./)
+INCLUDE_DIRECTORIES(./3rdparty/occi/include)
+
 AUX_SOURCE_DIRECTORY(. SRC_LIST)
 AUX_SOURCE_DIRECTORY(./tool/ini SRC_LIST)
 AUX_SOURCE_DIRECTORY(./logger SRC_LIST)
@@ -13,8 +16,12 @@ AUX_SOURCE_DIRECTORY(./syscfg SRC_LIST)
 AUX_SOURCE_DIRECTORY(./service SRC_LIST)
 AUX_SOURCE_DIRECTORY(./httpSvr SRC_LIST)
 AUX_SOURCE_DIRECTORY(./json SRC_LIST)
+AUX_SOURCE_DIRECTORY(./common SRC_LIST)
+AUX_SOURCE_DIRECTORY(./database SRC_LIST)
+AUX_SOURCE_DIRECTORY(./dataLayer SRC_LIST)
 
-LINK_LIBRARIES(pthread ccl microhttpd jsoncpp)
+LINK_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/occi/lib)
 
+LINK_LIBRARIES(pthread microhttpd jsoncpp ccl nnz11 clntsh occi boost_system boost_timer-mt)
 
 ADD_EXECUTABLE(schedule_server ${SRC_LIST})
