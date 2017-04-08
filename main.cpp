@@ -93,15 +93,19 @@ int main(int argc, char* argv[])
 		//读取配置参数
 		if (!CSysConfig::instance().loadConfig())
 		{
-			printf("读取系统配置参数失败!");
 			shm_st->run = 0;
 		}
-		//启动业务
-		if (!CSysService::start())
+		else
 		{
-			CLogger::instance()->write_log(LOG_LEVEL_ERR, "创建系统业务失败!");
-			shm_st->run = 0;
+			//启动业务
+			if (!CSysService::start())
+			{
+				CLogger::instance()->write_log(LOG_LEVEL_ERR, "创建系统业务失败!");
+				shm_st->run = 0;
+			}
 		}
+
+		sleep(2);
 
 		while(shm_st->run)
 		{

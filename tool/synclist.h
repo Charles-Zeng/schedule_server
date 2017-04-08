@@ -51,7 +51,7 @@ public:
 	///压入队列操作
 	///@param	t	要压入队列的对象
 	///@return	成功或失败
-	bool push(const T& t)
+	bool push(const T& t, bool front = false)
 	{
 		pthread_mutex_lock(&m_mutex);
 		if(m_cur_size >= m_max_size)
@@ -59,7 +59,14 @@ public:
 			pthread_mutex_unlock(&m_mutex);
 			return false;
 		}
-		m_list.push_back(t);
+		if(front)
+		{
+			m_list.push_front(t);
+		}
+		else
+		{
+			m_list.push_back(t);
+		}
 		m_cur_size++;
 		pthread_mutex_unlock(&m_mutex);
 		return true;

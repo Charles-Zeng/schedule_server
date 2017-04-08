@@ -45,7 +45,7 @@ bool CSysConfig::loadConfig()
 	//读取数据库连接字符串
 	if (!reader.getStringValue("database.connection", m_instance.m_dbConfig.m_connection))
 	{
-		CLogger::instance()->write_log(LOG_LEVEL_ERR, "读取数据库密码配置失败");
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "读取数据库连接字符串置失败");
 		return false;
 	}
 

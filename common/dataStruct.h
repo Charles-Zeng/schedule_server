@@ -24,7 +24,14 @@ struct ImageInfo
 
 typedef enum _httpType
 {
-	E_HTTP_UPLOAD_IMAGE
+	E_HTTP_UPLOAD_IMAGE,
+	E_HTTP_ADD_GROUP,
+	E_HTTP_DEL_GROUP,
+	E_HTTP_ADD_TEMPLATE,
+	E_HTTP_DEL_TEMPLATE,
+	E_HTTP_ONE_TO_ONE,
+	E_HTTP_ONE_TO_N
+
 }E_HTTP_TYPE;
 
 struct HttpRequest
