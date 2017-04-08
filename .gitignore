@@ -33,3 +33,5 @@
 *.sln
 *.VC.opendb
 *.vcxproj*
+*.opensdf
+*.suo
