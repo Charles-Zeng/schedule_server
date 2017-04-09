@@ -20,9 +20,10 @@ AUX_SOURCE_DIRECTORY(./common SRC_LIST)
 AUX_SOURCE_DIRECTORY(./database SRC_LIST)
 AUX_SOURCE_DIRECTORY(./dataLayer SRC_LIST)
 AUX_SOURCE_DIRECTORY(./dataQueue SRC_LIST)
+AUX_SOURCE_DIRECTORY(./processor SRC_LIST)
 
 LINK_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/occi/lib)
 
-LINK_LIBRARIES(pthread microhttpd jsoncpp ccl nnz11 clntsh occi boost_system boost_timer-mt)
+LINK_LIBRARIES(pthread microhttpd jsoncpp ccl nnz11 clntsh occi boost_system boost_timer-mt boost_thread-mt)
 
 ADD_EXECUTABLE(schedule_server ${SRC_LIST})

@@ -14,6 +14,11 @@ typedef struct stDbConfig
 	std::string m_connection;	//连接字符串
 }DbConfig;
 
+typedef struct stProcessConfig
+{
+	int m_threadNum;
+}ProcessConfig;
+
 class CSysConfig
 {
 private:
@@ -26,5 +31,6 @@ public:
 public:
 	HttpConfig m_httpConfig;
 	DbConfig m_dbConfig;
+	ProcessConfig m_processConfig;
 };
 

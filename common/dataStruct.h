@@ -41,7 +41,7 @@ struct HttpRequest
 	std::string httpBody;
 };
 
-struct httpResponse
+struct HttpResponse
 {
 	void *connection;
 	E_HTTP_TYPE httpType;

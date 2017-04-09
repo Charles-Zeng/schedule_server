@@ -48,6 +48,12 @@ bool CSysConfig::loadConfig()
 		CLogger::instance()->write_log(LOG_LEVEL_ERR, "读取数据库连接字符串置失败");
 		return false;
 	}
+	//读取业务处理线程个数
+	if (!reader.getIntValue("process.threadNum", m_instance.m_processConfig.m_threadNum))
+	{
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "read business process thread number config failed");
+		return false;
+	}
 
 	return true;
 }
