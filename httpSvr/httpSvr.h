@@ -2,6 +2,9 @@
 
 #include <string>
 #include <string.h>
+#include <map>
+#include "../common/dataStruct.h"
+#include <pthread.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -28,8 +31,10 @@ protected:
 		const char* upload_data,
 		size_t *upload_data_size,
 		void ** ptr);
-	static MHD_Response* buildRespons(int code, const std::string& message, const std::string& listMatchValues);
-	static void* testThread(void* arg);
+	static void* respProcThr(void*);
+	void buildRespons(MHD_Connection *connection, bool bSuccess, const std::string& strBody);
 private:
 	MHD_Daemon *m_pHttpDaemon;
+	std::map<std::string, E_HTTP_TYPE> m_httpTypes;
+	pthread_t m_thr;
 };

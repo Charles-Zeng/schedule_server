@@ -26,12 +26,12 @@ bool CDataQueue::getHttpReq(HttpRequest& req)
 	return m_queueReq.pop(req);
 }
 
-bool CDataQueue::pushHttpResp(const httpResponse &resp, bool front)
+bool CDataQueue::pushHttpResp(const HttpResponse &resp, bool front)
 {
 	return m_queueResp.push(resp, front);
 }
 
-bool CDataQueue::getHttpResp(httpResponse& resp)
+bool CDataQueue::getHttpResp(HttpResponse& resp)
 {
 	return m_queueResp.pop(resp);
 }

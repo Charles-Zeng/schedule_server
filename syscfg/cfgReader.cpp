@@ -7,11 +7,6 @@ CCfgReader::CCfgReader(const std::string& fileName)
 	m_config.sep_char = '=';
 	m_config.str_char = '"';
 	ccl_parse(&m_config, fileName.c_str());
-
-	const struct ccl_pair_t       *iter;
-	while ((iter = ccl_iterate(&m_config)) != 0) {
-		printf("(%s,%s)\n", iter->key, iter->value);
-	}
 }
 
 CCfgReader::~CCfgReader()

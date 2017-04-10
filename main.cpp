@@ -87,6 +87,7 @@ int main(int argc, char* argv[])
 			}
 		}
 
+		CSysService svr;
 		//业务进程执行代码
         CLogger::instance()->start_logger(1000, LOG_METHOD_CONSOLE | LOG_METHOD_FILE);
         CLogger::instance()->write_log(LOG_LEVEL_INFO, "业务进程启动...");
@@ -98,7 +99,7 @@ int main(int argc, char* argv[])
 		else
 		{
 			//启动业务
-			if (!CSysService::start())
+			if (!svr.start())
 			{
 				CLogger::instance()->write_log(LOG_LEVEL_ERR, "创建系统业务失败!");
 				shm_st->run = 0;

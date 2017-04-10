@@ -8,15 +8,15 @@ class CDataQueue
 private:
 	CDataQueue();
 	static CDataQueue m_instance;
-	static CDataQueue& instance();
 public:
+	static CDataQueue& instance();
 	virtual ~CDataQueue();
 	bool pushHttpReq(const HttpRequest& req, bool front = false);
 	bool getHttpReq(HttpRequest& req);
-	bool pushHttpResp(const httpResponse &resp, bool front = false);
-	bool getHttpResp(httpResponse& resp);
+	bool pushHttpResp(const HttpResponse &resp, bool front = false);
+	bool getHttpResp(HttpResponse& resp);
 private:
 	CSyncList<HttpRequest> m_queueReq;
-	CSyncList<httpResponse> m_queueResp;
+	CSyncList<HttpResponse> m_queueResp;
 };
 
