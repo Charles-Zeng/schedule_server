@@ -74,7 +74,6 @@ int CHttpSvr::httpCallBack(void *cls,
 	if (*ptr != &used)
 	{
 		*ptr = &used; 
-		
 		CLogger::instance()->write_log(LOG_LEVEL_INFO, "收到Http请求,url=%s, method=%s",
 			url, method);
 		const char* body = MHD_lookup_connection_value(connection, MHD_POSTDATA_KIND, NULL);

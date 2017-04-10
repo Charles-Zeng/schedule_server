@@ -10,7 +10,7 @@ CJsonParser::~CJsonParser()
 {
 }
 
-bool CJsonParser::parseUploadImageJson(const std::string& strJson)
+bool CJsonParser::parseUploadImageJson(const std::string& strJson, ImageInfo& imageInfo)
 {
 	Json::Reader reader;
 	Json::Value value;
@@ -23,6 +23,14 @@ bool CJsonParser::parseUploadImageJson(const std::string& strJson)
 		{
 			return false;
 		}
+
+		imageInfo.camerId = value["camerId"].asString();
+		imageInfo.location = value["location"].asString();
+		imageInfo.monitorTime = value["time"].asInt64();
+		imageInfo.gender = value["gender"].asInt();
+		imageInfo.imageStr = value["image"].asString();
+
+		return true;
 	}
 	
 	return false;
