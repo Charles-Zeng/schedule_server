@@ -1,6 +1,7 @@
 #include "dataLayer.h"
 #include <database/DBAdaptor.h>
 #include <common/commonFunction.h>
+#include <logger/logger.h>
 
 #include <time.h>
 #include <stdio.h>
@@ -11,23 +12,126 @@ void DataLayer::saveImage( const ImageInfo& imageInfo )
 {
 	std::string sqlStr = "INSERT INTO TB_MONITOR_PHOTO ( CAMERA_ID, MONITOR_TIME, PHOTO, CASE_PHOTO_ID) VALUES( :f1, to_date( :f2,'YYYY-MM-DD HH24:MI:SS'), :f3, :f4 )";
 
-	ConnectionObj connObj;
+	try
+	{
+		ConnectionObj connObj;
 
-	Statement *stmt = connObj.conn->createStatement();
-	stmt->setSQL(sqlStr);
+		Statement *stmt = connObj.conn->createStatement();
+		stmt->setSQL(sqlStr);
 
-	stmt->setString(1, imageInfo.camerId);
+		stmt->setString(1, imageInfo.camerId);
 
-	time_t monitorTime = imageInfo.monitorTime;
-	tm* timeInfo = localtime(&monitorTime);
-	std::string monitorTimeStr = time2Str(timeInfo, 1);	
+		time_t monitorTime = imageInfo.monitorTime;
+		tm* timeInfo = localtime(&monitorTime);
+		std::string monitorTimeStr = time2Str(timeInfo, 1);	
 
-	stmt->setString(2, monitorTimeStr);
-	stmt->setString(3, "");
-	stmt->setString(4, imageInfo.templateId);
+		stmt->setString(2, monitorTimeStr);
+		stmt->setString(3, "");
+		stmt->setString(4, imageInfo.templateId);
 
-	stmt->executeUpdate();
+		stmt->executeUpdate();
 
-	connObj.conn->terminateStatement(stmt);
+		connObj.conn->terminateStatement(stmt);
+	}
+	catch (exception &e)
+	{
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "%s:%d, exec sql error: %s", __FILE__, __LINE__, e.what());
+	}
+}
+
+std::string DataLayer::getOneToNGroupIds()
+{
+	std::string sqlStr = "SELECT LIBRARY_ID FROM TB_PARAM_LIBRARY";
+	std::string groupIds;
+
+	try
+	{
+		ConnectionObj connObj;
+
+		Statement *stmt = connObj.conn->createStatement();
+		stmt->setSQL(sqlStr);
+
+		ResultSet *rs = stmt->executeQuery();
+		
+		while (rs->next())
+		{
+			groupIds = rs->getString(1);
+		}
+
+		stmt->closeResultSet(rs);
+		connObj.conn->terminateStatement(stmt);
+	}
+	catch (exception &e)
+	{
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "%s:%d, exec sql error: %s", __FILE__, __LINE__, e.what());
+	}
+
+	return groupIds;
+}
+
+AlarmParam DataLayer::getAlarmParam()
+{
+	std::string sqlStr = "SELECT ALARM_THRESHOLD, MAX_RET_NUMBERS FROM TB_ALARM_PARAM";
+	AlarmParam alarmParam;
+
+	try
+	{
+		ConnectionObj connObj;
+
+		Statement *stmt = connObj.conn->createStatement();
+		stmt->setSQL(sqlStr);
+
+		ResultSet *rs = stmt->executeQuery();
+
+		while (rs->next())
+		{
+			alarmParam.alarmThreshold = rs->getFloat(1);
+			alarmParam.maxReturnNumber = rs->getInt(2);
+		}
+
+		stmt->closeResultSet(rs);
+		connObj.conn->terminateStatement(stmt);
+	}
+	catch (exception &e)
+	{
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "%s:%d, exec sql error: %s", __FILE__, __LINE__, e.what());
+	}
+
+	return alarmParam;
+}
+
+void DataLayer::saveSuspectAlarm( const SuspectAlarm& suspectAlarm )
+{
+	std::string sqlStr = "INSERT INTO TB_SUSPECT_ALARM (FACE_ID, MONITOR_ID, ALARM_TIME, ALARM_ADDRESS, SIMILARITY, SUSPECT_STATE, SUSPECT_TYPE ) \
+						 VALUES( :f1, :f2, to_date( :f3,'YYYY-MM-DD HH24:MI:SS'), :f4, :f5, :f6, f7 )";
+
+	try
+	{
+		ConnectionObj connObj;
+
+		Statement *stmt = connObj.conn->createStatement();
+		stmt->setSQL(sqlStr);
+
+		stmt->setString(1, suspectAlarm.faceId);
+		stmt->setString(2, suspectAlarm.monitorId);
+
+		time_t alarmTime = suspectAlarm.alarmTime;
+		tm* timeInfo = localtime(&alarmTime);
+		std::string alarmTimeStr = time2Str(timeInfo, 1);
+		stmt->setString(3, alarmTimeStr);
+
+		stmt->setString(4, suspectAlarm.alarmAddress);
+		stmt->setFloat(5, suspectAlarm.similarity);
+		stmt->setString(6, "1"); //1：未处理 2：已处理
+		stmt->setString(7, "1"); //1：布控自动告警 2：人工确认告警 3：人工比对告警
+
+		stmt->executeUpdate();
+
+		connObj.conn->terminateStatement(stmt);
+	}
+	catch (exception &e)
+	{
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "%s:%d, exec sql error: %s", __FILE__, __LINE__, e.what());
+	}
 }
 

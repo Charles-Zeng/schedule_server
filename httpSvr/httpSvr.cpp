@@ -57,7 +57,7 @@ int CHttpSvr::httpCallBack(void *cls,
 		*ptr = &used; 
 		CLogger::instance()->write_log(LOG_LEVEL_INFO, "收到Http请求,url=%s, method=%s, version=%s, upload_data=%s",
 			url, method, version, upload_data);
-		CJsonParser::parseUploadImageJson(upload_data);
+		//CJsonParser::parseUploadImageJson(upload_data);
 		pthread_t thr;
 		pthread_create(&thr, NULL, testThread, connection);
 		return MHD_YES;

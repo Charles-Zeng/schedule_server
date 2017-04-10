@@ -2,6 +2,7 @@
 #define _PROCESSOR_H_
 
 #include <common/dataStruct.h>
+#include <logger/logger.h>
 
 class Processor
 {

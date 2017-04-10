@@ -17,6 +17,7 @@ typedef struct stDbConfig
 typedef struct stProcessConfig
 {
 	int m_threadNum;
+	std::string m_defaultGroupId;
 }ProcessConfig;
 
 class CSysConfig

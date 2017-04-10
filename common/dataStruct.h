@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <string>
+#include <list>
 
 enum Gender
 {
@@ -21,6 +22,22 @@ struct ImageInfo
 	std::string templateId;
 };
 
+struct AlarmParam
+{
+	int maxReturnNumber;
+	float alarmThreshold;
+};
+
+struct SuspectAlarm
+{
+	std::string faceId;
+	std::string monitorId;
+	int64_t alarmTime;
+	std::string alarmAddress;
+	float similarity;
+	std::string suspectState;
+	std::string suspectType;
+};
 
 typedef enum _httpType
 {
@@ -47,6 +64,31 @@ struct HttpResponse
 	E_HTTP_TYPE httpType;
 	std::string httpBody;
 	bool bSuccess;
+};
+
+//dynamic 1:N request
+struct DynamicOneToNReq
+{
+	std::string sourceId;
+	std::string  pic;
+	float threshold;
+	int count;
+	std::string groupIds;
+};
+
+struct Matche
+{
+	std::string sourceId;
+	int id; // 比中的模板ID
+	float score;
+};
+
+//dynamic 1:N response
+struct DynamicOneToNResp
+{
+	int code;
+	std::string errorMessage;
+	std::list<Matche> listMatches;
 };
 
 #endif // _DATA_STRUCT_H_

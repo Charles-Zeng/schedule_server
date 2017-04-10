@@ -55,8 +55,7 @@ void ProcessorManager::run()
 		//队列改成条件变量阻塞队列
 		if (!CDataQueue::instance().getHttpReq(req))
 		{
-			CLogger::instance()->write_log(LOG_LEVEL_ERR, "processor module, %s:%d: get http request failed", __FILE__, __LINE__);
-			boost::this_thread::sleep(boost::posix_time::seconds(5));
+			boost::this_thread::sleep(boost::posix_time::seconds(1));
 			continue;
 		}
 
@@ -79,30 +78,45 @@ void ProcessorManager::processHttpReq( const HttpRequest& req, HttpResponse& res
 		}
 	case E_HTTP_ADD_GROUP:
 		{
+			ProcessAddGroup addGroup;
+			addGroup.process(req, resp);
 			break;
 		}
 	case E_HTTP_DEL_GROUP:
 		{
+			ProcessDelGroup delGroup;
+			delGroup.process(req, resp);
 			break;
 		}
 	case E_HTTP_ADD_TEMPLATE:
 		{
+			ProcessAddTemplate addTemplate;
+			addTemplate.process(req, resp);
 			break;
 		}
 	case E_HTTP_DEL_TEMPLATE:
 		{
+			ProcessDelTemplate delTemplate;
+			delTemplate.process(req, resp);
 			break;
 		}
 	case E_HTTP_ONE_TO_ONE:
 		{
+			ProcessOneToOne oneToOne;
+			oneToOne.process(req, resp);
 			break;
 		}
 	case E_HTTP_ONE_TO_N:
 		{
+			ProcessOneToN oneToN;
+			oneToN.process(req, resp);
 			break;
 		}
 	default:
-		break;
+		{
+			CLogger::instance()->write_log(LOG_LEVEL_ERR, "unknown http req type %d", req.httpType);
+			break;
+		}
 	}
 }
 

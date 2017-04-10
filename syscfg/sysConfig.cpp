@@ -54,6 +54,12 @@ bool CSysConfig::loadConfig()
 		CLogger::instance()->write_log(LOG_LEVEL_ERR, "read business process thread number config failed");
 		return false;
 	}
+	//读取默认库ID
+	if (!reader.getStringValue("process.defaultGroupId", m_instance.m_processConfig.m_defaultGroupId))
+	{
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "read default groupId config failed");
+		return false;
+	}
 
 	return true;
 }
