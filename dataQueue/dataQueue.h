@@ -11,7 +11,6 @@ private:
 public:
 	static CDataQueue& instance();
 	virtual ~CDataQueue();
-	static CDataQueue& instance();
 	bool pushHttpReq(const HttpRequest& req, bool front = false);
 	bool getHttpReq(HttpRequest& req);
 	bool pushHttpResp(const HttpResponse &resp, bool front = false);
