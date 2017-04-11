@@ -52,7 +52,7 @@ void ProcessorManager::run()
 		HttpRequest req;
 		HttpResponse resp;
 
-		//队列改成条件变量阻塞队列
+		//闃熷垪鏀规垚鏉′欢鍙橀噺闃诲闃熷垪
 		if (!CDataQueue::instance().getHttpReq(req))
 		{
 			boost::this_thread::sleep(boost::posix_time::seconds(1));
@@ -114,7 +114,7 @@ void ProcessorManager::processHttpReq( const HttpRequest& req, HttpResponse& res
 		}
 	default:
 		{
-			CLogger::instance()->write_log(LOG_LEVEL_ERR, "unknown http req type %d", req.httpType);
+			CLogger::instance()->write_log(LOG_LEVEL_ERR, "鏈煡鐨刪ttp璇锋眰绫诲瀷 %d", req.httpType);
 			break;
 		}
 	}

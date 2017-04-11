@@ -12,6 +12,9 @@ enum Gender
 	GENDER_WOMAN
 };
 
+const int GROUP_ID_BEGAIN = 33;
+const int GROUP_ID_END = 126;
+
 struct ImageInfo
 {
 	std::string camerId;
@@ -111,6 +114,41 @@ struct DynamicOneToNResp
 	int code;
 	std::string errorMessage;
 	std::list<Matche> listMatches;
+};
+
+//库类别信息
+struct GroupIdInfo
+{
+	int id;
+	std::string name;
+};
+//查询库类别响应
+struct GetGroupIdResp
+{
+	int code;
+	std::string errorMsg;
+	std::list<GroupIdInfo> groupIdInfos;
+};
+
+struct AddGroupResp
+{
+	int code;
+	std::string errorMsg;
+	std::string id;
+};
+
+struct DelGroupResp
+{
+	int code;
+	std::string errorMsg;
+	std::string id;
+};
+
+struct AddTemplateResp
+{
+	int code;
+	std::string errorMsg;
+	std::string id;
 };
 
 #endif // _DATA_STRUCT_H_

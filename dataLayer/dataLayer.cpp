@@ -35,7 +35,7 @@ void DataLayer::saveImage( const ImageInfo& imageInfo )
 	}
 	catch (exception &e)
 	{
-		CLogger::instance()->write_log(LOG_LEVEL_ERR, "%s:%d, exec sql error: %s", __FILE__, __LINE__, e.what());
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "%s:%d, 执行SQL出错: %s", __FILE__, __LINE__, e.what());
 	}
 }
 
@@ -63,7 +63,7 @@ std::string DataLayer::getOneToNGroupIds()
 	}
 	catch (exception &e)
 	{
-		CLogger::instance()->write_log(LOG_LEVEL_ERR, "%s:%d, exec sql error: %s", __FILE__, __LINE__, e.what());
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "%s:%d, 执行SQL出错: %s", __FILE__, __LINE__, e.what());
 	}
 
 	return groupIds;
@@ -94,7 +94,7 @@ AlarmParam DataLayer::getAlarmParam()
 	}
 	catch (exception &e)
 	{
-		CLogger::instance()->write_log(LOG_LEVEL_ERR, "%s:%d, exec sql error: %s", __FILE__, __LINE__, e.what());
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "%s:%d, 执行SQL出错: %s", __FILE__, __LINE__, e.what());
 	}
 
 	return alarmParam;
@@ -131,7 +131,7 @@ void DataLayer::saveSuspectAlarm( const SuspectAlarm& suspectAlarm )
 	}
 	catch (exception &e)
 	{
-		CLogger::instance()->write_log(LOG_LEVEL_ERR, "%s:%d, exec sql error: %s", __FILE__, __LINE__, e.what());
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "%s:%d, 执行SQL出错: %s", __FILE__, __LINE__, e.what());
 	}
 }
 

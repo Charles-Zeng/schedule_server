@@ -25,10 +25,10 @@ bool CSysService::start()
 	int processThreadNum = CSysConfig::instance().m_processConfig.m_threadNum;
 	if (!ProcessorManager::instance().init(processThreadNum))
 	{
-		CLogger::instance()->write_log(LOG_LEVEL_ERR, "start processor module failed");
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "启动业务处理模块失败");
 		return false;
 	}
-	CLogger::instance()->write_log(LOG_LEVEL_INFO, "start processor module success，thread num:%d", processThreadNum);
+	CLogger::instance()->write_log(LOG_LEVEL_INFO, "启动业务处理模块成功，线程数:%d", processThreadNum);
 
 
 	return true;

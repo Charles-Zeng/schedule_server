@@ -51,13 +51,13 @@ bool CSysConfig::loadConfig()
 	//读取业务处理线程个数
 	if (!reader.getIntValue("process.threadNum", m_instance.m_processConfig.m_threadNum))
 	{
-		CLogger::instance()->write_log(LOG_LEVEL_ERR, "read business process thread number config failed");
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "读取业务处理线程数配置失败");
 		return false;
 	}
 	//读取默认库ID
 	if (!reader.getStringValue("process.defaultGroupId", m_instance.m_processConfig.m_defaultGroupId))
 	{
-		CLogger::instance()->write_log(LOG_LEVEL_ERR, "read default groupId config failed");
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "读取默认库ID配置失败");
 		return false;
 	}
 
