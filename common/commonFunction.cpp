@@ -7,28 +7,28 @@ std::string time2Str( struct tm *lt, int nFormat )
 	std::string timeStr;
 	switch (nFormat)
 	{
-	case 0: //转换格式：yyyymmdd/hh/mi/ss
+	case 0: //杞崲鏍煎紡锛歽yyymmdd/hh/mi/ss
 		timeStr = boost::str(boost::format("%d%02d%02d/%02d/%02d/%02d") % (lt->tm_year + 1900) % (lt->tm_mon + 1) % lt->tm_mday % lt->tm_hour % lt->tm_min % lt->tm_sec);		
 		break;
-	case 1: //转换格式：yyyy-mm-dd hh:mi:ss
+	case 1: //杞崲鏍煎紡锛歽yyy-mm-dd hh:mi:ss
 		timeStr = boost::str(boost::format("%d-%02d-%02d %02d:%02d:%02d") % (lt->tm_year + 1900) % (lt->tm_mon + 1) % lt->tm_mday % lt->tm_hour % lt->tm_min % lt->tm_sec);
 		break;
-	case 2: //转换格式：yyyy-mm-dd 00:00:00
+	case 2: //杞崲鏍煎紡锛歽yyy-mm-dd 00:00:00
 		timeStr = boost::str(boost::format("%d-%02d-%02d 00:00:00") % (lt->tm_year + 1900) % (lt->tm_mon + 1) % lt->tm_mday);
 		break;
-	case 3: //转换格式：hhmiss
+	case 3: //杞崲鏍煎紡锛歨hmiss
 		timeStr = boost::str(boost::format("%02d%02d%02d") % lt->tm_hour % lt->tm_min % lt->tm_sec);
 		break;
-	case 4: //转换格式：yyyymmddhh0000
+	case 4: //杞崲鏍煎紡锛歽yyymmddhh0000
 		timeStr = boost::str(boost::format("%02d%02d%02d%02d0000") % (lt->tm_year + 1900) % (lt->tm_mon + 1) % lt->tm_mday % lt->tm_hour );
 		break;
-	case 5: //转换格式：mmdd
+	case 5: //杞崲鏍煎紡锛歮mdd
 		timeStr = boost::str(boost::format("%02d%02d") % (lt->tm_mon + 1) % lt->tm_mday);
 		break;
-	case 6: //转换格式：yyyymmdd000000
+	case 6: //杞崲鏍煎紡锛歽yyymmdd000000
 		timeStr = boost::str(boost::format("%02d%02d%02d000000") % (lt->tm_year + 1900) % (lt->tm_mon + 1) % lt->tm_mday );
 		break;
-	case 7: //转换格式：yyyymmddhhmiss
+	case 7: //杞崲鏍煎紡锛歽yyymmddhhmiss
 		timeStr = boost::str(boost::format("%d%02d%02d%02d%02d%02d") % (lt->tm_year + 1900) % (lt->tm_mon + 1) % lt->tm_mday % lt->tm_hour % lt->tm_min % lt->tm_sec);
 		break;
 	default:

@@ -22,6 +22,29 @@ struct ImageInfo
 	std::string templateId;
 };
 
+struct TemplateInfo
+{
+    std::string createTime;
+    std::string groupId;
+    int gender;
+    std::string imageStr;
+};
+
+struct OneToOneInfo
+{
+    std::string pic1Base64;
+    std::string pic2Base64;
+};
+
+struct OneToNInfo
+{
+    std::string picBase64;
+    float threshold;
+    int32_t count;
+    std::list<int32_t> groupIds;
+    int32_t gender;
+};
+
 struct AlarmParam
 {
 	int maxReturnNumber;
@@ -78,7 +101,7 @@ struct DynamicOneToNReq
 struct Matche
 {
 	std::string sourceId;
-	int id; // 比中的模板ID
+	int id; // 姣斾腑鐨勬ā鏉縄D
 	float score;
 };
 

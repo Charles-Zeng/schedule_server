@@ -70,12 +70,12 @@ bool DBAdaptor::init( const std::string& username,
 	}
 	catch (SQLException &e)
 	{
-		CLogger::instance()->write_log(LOG_LEVEL_ERR, "³õÊ¼»¯Êı¾İ¿âÊ§°Ü£º%s", e.what());
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "åˆå§‹åŒ–æ•°æ®åº“å¤±è´¥ï¼š%s", e.what());
 		return false;
 	}
 	catch(std::exception &e)
 	{		
-		CLogger::instance()->write_log(LOG_LEVEL_ERR, "³õÊ¼»¯Êı¾İ¿âÊ§°Ü£º%s", e.what());
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "åˆå§‹åŒ–æ•°æ®åº“å¤±è´¥ï¼š%s", e.what());
 		return false;
 	}
 

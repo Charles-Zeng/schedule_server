@@ -122,8 +122,8 @@ void DataLayer::saveSuspectAlarm( const SuspectAlarm& suspectAlarm )
 
 		stmt->setString(4, suspectAlarm.alarmAddress);
 		stmt->setFloat(5, suspectAlarm.similarity);
-		stmt->setString(6, "1"); //1£ºÎ´´¦Àí 2£ºÒÑ´¦Àí
-		stmt->setString(7, "1"); //1£º²¼¿Ø×Ô¶¯¸æ¾¯ 2£ºÈË¹¤È·ÈÏ¸æ¾¯ 3£ºÈË¹¤±È¶Ô¸æ¾¯
+		stmt->setString(6, "1"); //1ï¼šæœªå¤„ç† 2ï¼šå·²å¤„ç†
+		stmt->setString(7, "1"); //1ï¼šå¸ƒæŽ§è‡ªåŠ¨å‘Šè­¦ 2ï¼šäººå·¥ç¡®è®¤å‘Šè­¦ 3ï¼šäººå·¥æ¯”å¯¹å‘Šè­¦
 
 		stmt->executeUpdate();
 

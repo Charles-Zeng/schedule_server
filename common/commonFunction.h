@@ -6,12 +6,12 @@
 
 /// ================================================
 ///
-/// @brief       Ê±¼ä×ª»»Îª×Ö·û
+/// @brief       æ—¶é—´è½¬æ¢ä¸ºå­—ç¬¦
 ///
-/// @details     ½«´«ÈëµÄÊ±¼ä²ÎÊı°´ÕÕÖ¸¶¨µÄ¸ñÊ½×ª»¯
+/// @details     å°†ä¼ å…¥çš„æ—¶é—´å‚æ•°æŒ‰ç…§æŒ‡å®šçš„æ ¼å¼è½¬åŒ–
 ///
-/// @param[in]   lt        Ê±¼ä½á¹¹Ìå
-/// @param[in]   nFormat     ×ª»»¸ñÊ½
+/// @param[in]   lt        æ—¶é—´ç»“æ„ä½“
+/// @param[in]   nFormat     è½¬æ¢æ ¼å¼
 ///            nFormat = 0 : yyyymmdd/hh/mi/ss
 ///            nFormat = 1 : yyyy-mm-dd hh:mi:ss
 ///            nFormat = 2 : yyyy-mm-dd 00:00:00
@@ -21,7 +21,7 @@
 ///            nFormat = 6 : yyyymmdd000000
 ///            nFormat = 7 : yyyymmddhhmiss
 ///
-/// @return ×ª»»ºóµÄÊ±¼ä×Ö·û´®
+/// @return è½¬æ¢åçš„æ—¶é—´å­—ç¬¦ä¸²
 /// ================================================
 std::string time2Str(struct tm *lt, int nFormat);
 
