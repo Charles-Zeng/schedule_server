@@ -60,6 +60,7 @@ void ProcessorManager::run()
 		}
 
 		processHttpReq(req, resp);
+		resp.connection = req.connection;
 
 		CDataQueue::instance().pushHttpResp(resp, isPriorityReq(req.httpType));
 	}
