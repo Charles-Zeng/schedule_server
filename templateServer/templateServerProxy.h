@@ -6,11 +6,14 @@
 class TemplateServerProxy
 {
 public:
-	static void addTemplate(const TemplateInfo& templateInfo, AddTemplateResp& resp);
-	static void dynamicOneToN(const DynamicOneToNReq& req, DynamicOneToNResp& resp);
-	static void getGroupIdInfos(GetGroupIdResp& resp);
-	static void addGroupId(const GroupIdInfo& req, AddGroupResp& resp);
-	static void delGroupId(int64_t groupId, DelGroupResp& resp);
+	static bool addGroupId(const GroupIdInfo& req, AddGroupResp& resp);
+	static bool delGroupId(int64_t groupId, DelGroupResp& resp);
+	static bool addTemplate(const TemplateInfo& templateInfo, AddTemplateResp& resp);
+	static bool delTemplate(int id, DelTemplateResp& resp);		 
+	static bool dynamicOneToN(const DynamicOneToNReq& req, DynamicOneToNResp& resp);
+	static bool getGroupIdInfos(GetGroupIdResp& resp);
+	static bool getFaceInfo(const std::string pic, GetFaceInfoResp& resp);
+	static bool oneToOne(const OneToOneInfo& req, OneToOneResp& resp);
 };
 
 #endif // _TEMPLATE_SERVER_PROXY_H_

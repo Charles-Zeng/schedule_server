@@ -1,27 +1,44 @@
 #include "templateServerProxy.h"
 
-void TemplateServerProxy::addTemplate( const TemplateInfo& templateInfo, AddTemplateResp& resp )
-{
 
+bool TemplateServerProxy::addGroupId( const GroupIdInfo& req, AddGroupResp& resp )
+{
+	return true;
 }
 
-void TemplateServerProxy::dynamicOneToN( const DynamicOneToNReq& req, DynamicOneToNResp& resp )
+bool TemplateServerProxy::delGroupId( int64_t groupId, DelGroupResp& resp )
 {
-
+	return true;
 }
 
-void TemplateServerProxy::getGroupIdInfos( GetGroupIdResp& resp )
+bool TemplateServerProxy::addTemplate( const TemplateInfo& templateInfo, AddTemplateResp& resp )
 {
-
+	return true;
 }
 
-void TemplateServerProxy::addGroupId( const GroupIdInfo& req, AddGroupResp& resp )
+bool TemplateServerProxy::delTemplate( int id, DelTemplateResp& resp )
 {
-
+	return true;
 }
 
-void TemplateServerProxy::delGroupId( int64_t groupId, DelGroupResp& resp )
+bool TemplateServerProxy::dynamicOneToN( const DynamicOneToNReq& req, DynamicOneToNResp& resp )
 {
-
+	return true;
 }
+
+bool TemplateServerProxy::getGroupIdInfos( GetGroupIdResp& resp )
+{
+	return true;
+}
+
+bool TemplateServerProxy::getFaceInfo( const std::string pic, GetFaceInfoResp& resp )
+{
+	return true;
+}
+
+bool TemplateServerProxy::oneToOne( const OneToOneInfo& req, OneToOneResp& resp )
+{
+	return true;
+}
+
 

@@ -8,8 +8,10 @@
 
 using namespace oracle::occi;
 
-void DataLayer::saveImage( const ImageInfo& imageInfo )
+bool DataLayer::saveImage( const ImageInfo& imageInfo )
 {
+	bool ret = false;
+
 	std::string sqlStr = "INSERT INTO TB_MONITOR_PHOTO ( CAMERA_ID, MONITOR_TIME, PHOTO, CASE_PHOTO_ID) VALUES( :f1, to_date( :f2,'YYYY-MM-DD HH24:MI:SS'), :f3, :f4 )";
 
 	try
@@ -32,18 +34,22 @@ void DataLayer::saveImage( const ImageInfo& imageInfo )
 		stmt->executeUpdate();
 
 		connObj.conn->terminateStatement(stmt);
+
+		ret = true;
 	}
 	catch (exception &e)
 	{
 		CLogger::instance()->write_log(LOG_LEVEL_ERR, "%s:%d, 执行SQL出错: %s", __FILE__, __LINE__, e.what());
 	}
+
+	return ret;
 }
 
-std::string DataLayer::getOneToNGroupIds()
+bool DataLayer::getOneToNGroupIds(std::string &groupIds)
 {
+	bool ret = false;
 	std::string sqlStr = "SELECT LIBRARY_ID FROM TB_PARAM_LIBRARY";
-	std::string groupIds;
-
+	
 	try
 	{
 		ConnectionObj connObj;
@@ -60,19 +66,21 @@ std::string DataLayer::getOneToNGroupIds()
 
 		stmt->closeResultSet(rs);
 		connObj.conn->terminateStatement(stmt);
+
+		ret = true;
 	}
 	catch (exception &e)
 	{
 		CLogger::instance()->write_log(LOG_LEVEL_ERR, "%s:%d, 执行SQL出错: %s", __FILE__, __LINE__, e.what());
 	}
 
-	return groupIds;
+	return ret;
 }
 
-AlarmParam DataLayer::getAlarmParam()
+bool DataLayer::getAlarmParam(AlarmParam &alarmParam)
 {
+	bool ret = false;
 	std::string sqlStr = "SELECT ALARM_THRESHOLD, MAX_RET_NUMBERS FROM TB_ALARM_PARAM";
-	AlarmParam alarmParam;
 
 	try
 	{
@@ -91,17 +99,20 @@ AlarmParam DataLayer::getAlarmParam()
 
 		stmt->closeResultSet(rs);
 		connObj.conn->terminateStatement(stmt);
+
+		ret = true;
 	}
 	catch (exception &e)
 	{
 		CLogger::instance()->write_log(LOG_LEVEL_ERR, "%s:%d, 执行SQL出错: %s", __FILE__, __LINE__, e.what());
 	}
 
-	return alarmParam;
+	return ret;
 }
 
-void DataLayer::saveSuspectAlarm( const SuspectAlarm& suspectAlarm )
+bool DataLayer::saveSuspectAlarm( const SuspectAlarm& suspectAlarm )
 {
+	bool ret = false;
 	std::string sqlStr = "INSERT INTO TB_SUSPECT_ALARM (FACE_ID, MONITOR_ID, ALARM_TIME, ALARM_ADDRESS, SIMILARITY, SUSPECT_STATE, SUSPECT_TYPE ) \
 						 VALUES( :f1, :f2, to_date( :f3,'YYYY-MM-DD HH24:MI:SS'), :f4, :f5, :f6, f7 )";
 
@@ -128,10 +139,14 @@ void DataLayer::saveSuspectAlarm( const SuspectAlarm& suspectAlarm )
 		stmt->executeUpdate();
 
 		connObj.conn->terminateStatement(stmt);
+
+		ret = true;
 	}
 	catch (exception &e)
 	{
 		CLogger::instance()->write_log(LOG_LEVEL_ERR, "%s:%d, 执行SQL出错: %s", __FILE__, __LINE__, e.what());
 	}
+
+	return ret;
 }
 

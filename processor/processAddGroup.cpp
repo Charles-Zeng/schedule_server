@@ -6,11 +6,29 @@
 
 void ProcessAddGroup::process( const HttpRequest& req, HttpResponse& resp )
 {
+	Json::Value respJson;
 	std::string groupName;
-	CJsonParser::parseAddGroup(req.httpBody, groupName);
+	if (!CJsonParser::parseAddGroup(req.httpBody, groupName))
+	{
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "addGroup: 解析包体json失败. body: %s", req.httpBody.c_str());
+		respJson["code"] = 1;
+		respJson["message"] = "invalid body json parameter";
+		resp.bSuccess = true;
+		resp.httpBody = respJson.toStyledString();
+		return;
+	}
 
 	GetGroupIdResp getGroupIdResp;
-	TemplateServerProxy::getGroupIdInfos(getGroupIdResp);
+	if (!TemplateServerProxy::getGroupIdInfos(getGroupIdResp))
+	{
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "addGroup: 获取库ID信息失败: %s", getGroupIdResp.errorMsg.c_str());
+		respJson["code"] = 1;
+		respJson["message"] = getGroupIdResp.errorMsg;
+		resp.bSuccess = true;
+		resp.httpBody = respJson.toStyledString();
+		return;
+	}
+
 	int newGroupId = getNewGroupId(getGroupIdResp.groupIdInfos);
 
 	GroupIdInfo newGroupIdInfo;
@@ -18,9 +36,16 @@ void ProcessAddGroup::process( const HttpRequest& req, HttpResponse& resp )
 	newGroupIdInfo.name = groupName;
 
 	AddGroupResp addGroupResp;
-	TemplateServerProxy::addGroupId(newGroupIdInfo, addGroupResp);
+	if (!TemplateServerProxy::addGroupId(newGroupIdInfo, addGroupResp))
+	{
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "addGroup: 添加库ID失败: %s", addGroupResp.errorMsg.c_str());
+		respJson["code"] = 1;
+		respJson["message"] = addGroupResp.errorMsg;
+		resp.bSuccess = true;
+		resp.httpBody = respJson.toStyledString();
+		return;
+	}
 
-	Json::Value respJson;
 	respJson["code"] = addGroupResp.code;
 	respJson["message"] = addGroupResp.errorMsg;
 	respJson["groupId"] = addGroupResp.id;

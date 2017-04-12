@@ -130,6 +130,7 @@ struct GetGroupIdResp
 	std::list<GroupIdInfo> groupIdInfos;
 };
 
+//添加库响应
 struct AddGroupResp
 {
 	int code;
@@ -137,6 +138,7 @@ struct AddGroupResp
 	std::string id;
 };
 
+//删除库响应
 struct DelGroupResp
 {
 	int code;
@@ -144,11 +146,42 @@ struct DelGroupResp
 	std::string id;
 };
 
+//添加模板响应
 struct AddTemplateResp
 {
 	int code;
 	std::string errorMsg;
-	std::string id;
+	int id;
+};
+
+//删除模板响应
+struct DelTemplateResp
+{
+	int code;
+	std::string errorMsg;
+	int id;
+};
+
+struct FaceInfo
+{
+	std::string facePic;
+	float qualityScore;
+};
+
+//获取人脸信息响应
+struct GetFaceInfoResp
+{
+	int code;
+	std::string errorMsg;
+	FaceInfo faceInfo;
+};
+
+//1:1比对响应
+struct OneToOneResp
+{
+	int code;
+	std::string errorMsg;
+	float score;
 };
 
 #endif // _DATA_STRUCT_H_

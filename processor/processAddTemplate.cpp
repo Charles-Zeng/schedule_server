@@ -7,25 +7,36 @@
 
 void ProcessAddTemplate::process( const HttpRequest& req, HttpResponse& resp )
 {
-	Json::Value respBodyJson;
+	Json::Value respJson;
 
 	TemplateInfo templateInfo;
 
 	if (!CJsonParser::parseAddTemplate(req.httpBody, templateInfo))
 	{
-		respBodyJson["code"] = 1;
-		respBodyJson["message"] = "invalid body json";
-		resp.bSuccess = false;
-		resp.httpBody = respBodyJson.toStyledString();
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "addTemplate: 解析包体json失败. body: %s", req.httpBody.c_str());
+		respJson["code"] = 1;
+		respJson["message"] = "invalid body json";
+		resp.bSuccess = true;
+		resp.httpBody = respJson.toStyledString();
 		return;
 	}
 
 	AddTemplateResp addTemplateResp;
-	TemplateServerProxy::addTemplate(templateInfo, addTemplateResp);
+	if (!TemplateServerProxy::addTemplate(templateInfo, addTemplateResp))
+	{
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "addTemplate: 添加模板失败: %s", addTemplateResp.errorMsg.c_str());
+		respJson["code"] = 1;
+		respJson["message"] = addTemplateResp.errorMsg;
+		resp.bSuccess = true;
+		resp.httpBody = respJson.toStyledString();
+		return;
+	}
+	
 
-	respBodyJson["code"] = addTemplateResp.code;
-	respBodyJson["message"] = addTemplateResp.errorMsg;
+	respJson["code"] = addTemplateResp.code;
+	respJson["message"] = addTemplateResp.errorMsg;
+	respJson["templateID"] = addTemplateResp.id;
 	resp.bSuccess = true;
-	resp.httpBody = respBodyJson.toStyledString();
+	resp.httpBody = respJson.toStyledString();
 }
 

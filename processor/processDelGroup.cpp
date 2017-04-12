@@ -6,25 +6,33 @@
 
 void ProcessDelGroup::process( const HttpRequest& req, HttpResponse& resp )
 {
-	Json::Value respBodyJson;
-
+	Json::Value respJson;
 	int64_t groupId;
 
 	if (!CJsonParser::parseDelGroup(req.httpBody, groupId))
 	{
-		respBodyJson["code"] = 1;
-		respBodyJson["message"] = "invalid body json";
-		resp.bSuccess = false;
-		resp.httpBody = respBodyJson.toStyledString();
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "delGroup: ½âÎö°üÌåjsonÊ§°Ü. body: %s", req.httpBody.c_str());
+		respJson["code"] = 1;
+		respJson["message"] = "invalid body json";
+		resp.bSuccess = true;
+		resp.httpBody = respJson.toStyledString();
 		return;
 	}
 
 	DelGroupResp delGroupResp;
-	TemplateServerProxy::delGroupId(groupId, delGroupResp);
+	if (!TemplateServerProxy::delGroupId(groupId, delGroupResp))
+	{
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "delGroup: É¾³ý¿âIDÊ§°Ü: %s", delGroupResp.errorMsg.c_str());
+		respJson["code"] = 1;
+		respJson["message"] = delGroupResp.errorMsg;
+		resp.bSuccess = true;
+		resp.httpBody = respJson.toStyledString();
+		return;
+	}
 
-	respBodyJson["code"] = delGroupResp.code;
-	respBodyJson["message"] = delGroupResp.errorMsg;
+	respJson["code"] = delGroupResp.code;
+	respJson["message"] = delGroupResp.errorMsg;
 	resp.bSuccess = true;
-	resp.httpBody = respBodyJson.toStyledString();
+	resp.httpBody = respJson.toStyledString();
 }
 

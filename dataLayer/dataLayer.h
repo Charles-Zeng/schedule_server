@@ -7,10 +7,10 @@
 class DataLayer
 {
 public:
-	static void saveImage(const ImageInfo& imageInfo);
-	static std::string getOneToNGroupIds();
-	static AlarmParam getAlarmParam();
-	static void saveSuspectAlarm(const SuspectAlarm& suspectAlarm);
+	static bool saveImage(const ImageInfo& imageInfo);
+	static bool getOneToNGroupIds(std::string &groupIds);
+	static bool getAlarmParam(AlarmParam &alarmParam);
+	static bool saveSuspectAlarm(const SuspectAlarm& suspectAlarm);
 };
 
 #endif // _DATA_LAYER_H_

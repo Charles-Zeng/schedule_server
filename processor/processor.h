@@ -3,6 +3,7 @@
 
 #include <common/dataStruct.h>
 #include <logger/logger.h>
+#include <json/json.h>
 
 class Processor
 {

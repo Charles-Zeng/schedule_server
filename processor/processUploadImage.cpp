@@ -1,4 +1,5 @@
 #include "processUploadImage.h"
+#include <boost/format.hpp>
 #include <json/jsonParser.h>
 #include <templateServer/templateServerProxy.h>
 #include <dataLayer/dataLayer.h>
@@ -7,11 +8,16 @@
 
 void ProcessUploadImage::process( const HttpRequest& req, HttpResponse& resp )
 {
+	Json::Value respJson;
 	ImageInfo imageInfo;
 
 	if (!CJsonParser::parseUploadImageJson(req.httpBody, imageInfo))
 	{
 		CLogger::instance()->write_log(LOG_LEVEL_ERR, "uploadImage: 解析包体json失败. body: %s", req.httpBody.c_str());
+		respJson["code"] = 1;
+		respJson["message"] = "invalid body json parameter";
+		resp.bSuccess = true;
+		resp.httpBody = respJson.toStyledString();
 		return;
 	}
 
@@ -25,24 +31,84 @@ void ProcessUploadImage::process( const HttpRequest& req, HttpResponse& resp )
 	templateInfo.imageStr = imageInfo.imageStr;
 
 	AddTemplateResp addTemplateResp;
-	TemplateServerProxy::addTemplate(templateInfo, addTemplateResp);
-
-	imageInfo.templateId = addTemplateResp.id;
+	if (!TemplateServerProxy::addTemplate(templateInfo, addTemplateResp))
+	{
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "uploadImage: 添加模板失败:%s", addTemplateResp.errorMsg.c_str());
+		respJson["code"] = 1;
+		respJson["message"] = addTemplateResp.errorMsg;
+		resp.bSuccess = true;
+		resp.httpBody = respJson.toStyledString();
+		return;
+	}
+		
+	imageInfo.templateId = boost::str(boost::format("%d") % addTemplateResp.id);
 
 	//2.save to db
-	DataLayer::saveImage(imageInfo);
+	if (!DataLayer::saveImage(imageInfo))
+	{
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "uploadImage: 图片信息入库失败");
+		respJson["code"] = 1;
+		respJson["message"] = "save image to db failed";
+		resp.bSuccess = true;
+		resp.httpBody = respJson.toStyledString();
+		return;
+	}
+	
 
 	//3.动态1:N
 	DynamicOneToNReq oneToNReq;
 	oneToNReq.sourceId = ""; // how to get??
 	oneToNReq.pic = imageInfo.imageStr;
-	oneToNReq.groupIds = DataLayer::getOneToNGroupIds();
-	AlarmParam alarmParam = DataLayer::getAlarmParam();
+
+	AlarmParam alarmParam;
+	if (!DataLayer::getOneToNGroupIds(oneToNReq.groupIds) || !DataLayer::getAlarmParam(alarmParam))
+	{
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "uploadImage: 获取告警参数失败");
+		respJson["code"] = 1;
+		respJson["message"] = "get alarm parameter failed";
+		resp.bSuccess = true;
+		resp.httpBody = respJson.toStyledString();
+		return;
+	}
+	
 	oneToNReq.threshold = alarmParam.alarmThreshold;
 	oneToNReq.count = alarmParam.maxReturnNumber;
 
 	DynamicOneToNResp oneToNResp;
-	TemplateServerProxy::dynamicOneToN(oneToNReq, oneToNResp);
+	if (!TemplateServerProxy::dynamicOneToN(oneToNReq, oneToNResp))
+	{
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "uploadImage: 调用动态1:N失败:%s", oneToNResp.errorMessage.c_str());
+		respJson["code"] = 1;
+		respJson["message"] = oneToNResp.errorMessage;
+		resp.bSuccess = true;
+		resp.httpBody = respJson.toStyledString();
+		return;
+	}
+
 	//4.入告警库
+	typedef list<Matche>::iterator IT;
+	for (IT it = oneToNResp.listMatches.begin(); it != oneToNResp.listMatches.end(); ++it)
+	{
+		SuspectAlarm suspectAlarm;
+		suspectAlarm.faceId = "";
+		suspectAlarm.monitorId = "";
+		suspectAlarm.alarmTime = time(NULL);
+		suspectAlarm.alarmAddress = "";
+		suspectAlarm.similarity = it->score;
+		suspectAlarm.suspectState = "1"; // 1：未处理 2：已处理
+		suspectAlarm.suspectType = "1"; // 1：布控自动告警 2：人工确认告警 3：人工比对告警
+
+		if (!DataLayer::saveSuspectAlarm(suspectAlarm))
+		{
+			CLogger::instance()->write_log(LOG_LEVEL_ERR, "uploadImage: 告警信息入库失败");
+			continue;
+		}
+		
+	}
+
+	respJson["code"] = 0;
+	respJson["message"] = "success";
+	resp.bSuccess = true;
+	resp.httpBody = respJson.toStyledString();
 }
 
