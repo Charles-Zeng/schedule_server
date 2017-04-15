@@ -1,29 +1,29 @@
 #pragma once
 #include <iostream>
 
-//gsoap ÒµÎñÂß¼­´¦ÀíÀà
-//´¦ÀíµÄ½Ó¿Ú°üÀ¨
-/*1.Ìí¼ÓÄ£°å
-2.É¾³ıÄ£°å
-3.1:1½Ó¿Ú
-4.1:N½Ó¿Ú
-5.¾²Ì¬1:1½Ó¿Ú
-6.Ìí¼Ó¿âÀà±ğ
-7.É¾³ı¿âÀà±ğ
-8.²éÑ¯¿âÀà±ğ
-9.²éÑ¯ÈËÁ³ĞÅÏ¢*/
-//¶ÔÍâ±©Â¶Ò»¸öÍ³Ò»µÄ½Ó¿Ú string FaceServiceAPI(string ReqType,//ÇëÇóÀà±ğ string ReqJson//ÇëÇójson´®);
+//gsoap ä¸šåŠ¡é€»è¾‘å¤„ç†ç±»
+//å¤„ç†çš„æ¥å£åŒ…æ‹¬
+/*1.æ·»åŠ æ¨¡æ¿
+2.åˆ é™¤æ¨¡æ¿
+3.1:1æ¥å£
+4.1:Næ¥å£
+5.é™æ€1:1æ¥å£
+6.æ·»åŠ åº“ç±»åˆ«
+7.åˆ é™¤åº“ç±»åˆ«
+8.æŸ¥è¯¢åº“ç±»åˆ«
+9.æŸ¥è¯¢äººè„¸ä¿¡æ¯*/
+//å¯¹å¤–æš´éœ²ä¸€ä¸ªç»Ÿä¸€çš„æ¥å£ string FaceServiceAPI(string ReqType,//è¯·æ±‚ç±»åˆ« string ReqJson//è¯·æ±‚jsonä¸²);
 class MygSoapProcess
 {
 public:
 	MygSoapProcess();
 	~MygSoapProcess();
-	bool FaceServiceAPI(std::string ReqType,/*ÇëÇóÀà±ğ*/ std::string ReqJson/*ÇëÇójson´®*/);
-	std::string szReqJson;                //·µ»ØµÄjsonÖµ
+	bool FaceServiceAPI(const std::string& ReqType, /*è¯·æ±‚ç±»åˆ«*/
+						const std::string& ReqJson,/*è¯·æ±‚jsonä¸²*/
+						std::string& strResult); 
+	std::string szReqJson;                //è¿”å›çš„jsonå€¼
 private:
-	wchar_t* StringToWchar_tP(wchar_t * szDst, std::string strDes);           //string ×ªwchar_t
-	bool Wchar_tToString(std::string& szDst, wchar_t *DesWchar);
-	wchar_t *szDstTemp;                //Ë½ÓĞ±äÁ¿
-	char   *psText;  // psTextÎªchar*µÄÁÙÊ±Êı×é£¬×÷Îª¸³Öµ¸østd::stringµÄÖĞ¼ä±äÁ¿
+	std::wstring utf8ToUnicode(const std::string& strUtf8);           //utf8è½¬unicode
+	std::string unicodeToUtf8(const std::wstring& strUnicode);
 };
 

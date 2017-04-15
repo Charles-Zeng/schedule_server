@@ -1,75 +1,70 @@
-#include "gsoap/MygSoapProcess.h"
-#include "gsoap/BasicHttpBinding_USCOREIFACE.nsmap"
-#include "gsoap/soapBasicHttpBinding_USCOREIFACEProxy.h"
-#include "gsoap/stdsoap2.h"
-#include "gsoap/MygSoapReqRepStruct.h"
-#include "json/json.h"
-
+#include "MygSoapProcess.h"
+#include "BasicHttpBinding_USCOREIFACE.nsmap"
+#include "soapBasicHttpBinding_USCOREIFACEProxy.h"
+#include "stdsoap2.h"
+#include "MygSoapReqRepStruct.h"
+#include <sys/types.h>
+#include <stdio.h> 
+#include <locale.h>
+#include <stdlib.h>
 
 MygSoapProcess::MygSoapProcess()
 {
+	 setlocale(LC_CTYPE,setlocale(LC_ALL,""));
 }
-
 
 MygSoapProcess::~MygSoapProcess()
 {
-	delete[] szDstTemp; // Îö¹¹¸ÃÄÚ´æ
-	delete[] psText;	// psTextµÄÇå³ı
+	
 }
 
-//string ×ªwchar_t *
-wchar_t* MygSoapProcess::StringToWchar_tP(wchar_t *szDst, string strDes)
+std::wstring MygSoapProcess::utf8ToUnicode(const std::string& strUtf8)
 {
-	int mystringSize = (int)(strDes.length() + 1);
-	szDstTemp = new wchar_t[mystringSize];
-	MultiByteToWideChar(CP_ACP, 0, strDes.c_str(), -1, szDstTemp, mystringSize);
-	szDst = szDstTemp;
-	return szDst;
-}
-//wchar_t ×ªstring
-bool MygSoapProcess::Wchar_tToString(std::string& szDst, wchar_t *DesWchar)
-{
-	if (DesWchar == NULL)
-	{
-		return false;
-	}
-	else
-	{
-		wchar_t * wText = DesWchar;
-		DWORD dwNum = WideCharToMultiByte(CP_OEMCP, NULL, wText, -1, NULL, 0, NULL, FALSE);// WideCharToMultiByteµÄÔËÓÃ
-		psText = new char[dwNum];
-		WideCharToMultiByte(CP_OEMCP, NULL, wText, -1, psText, dwNum, NULL, FALSE);// WideCharToMultiByteµÄÔÙ´ÎÔËÓÃ
-		szDst = psText;// std::string¸³Öµ
-		return true;
-	}	
+	size_t length = strUtf8.length();
+	wchar_t *szDstTemp = new wchar_t[length+1];
+	mbstowcs(szDstTemp, strUtf8.c_str(), length);
+	std::wstring strUnicode = szDstTemp;
+	delete[] szDstTemp; // ææ„è¯¥å†…å­˜
+	return strUnicode;
 }
 
-//FaceServiceAPIÊµÏÖ
-bool MygSoapProcess::FaceServiceAPI(std::string ReqType, std::string ReqJson)
+std::string MygSoapProcess::unicodeToUtf8(const std::wstring& strUnicode)
 {
-	//ÇëÇóÀàĞÍÎª¿Õ Ö±½Ó·µ»Ø£¬²»´¦Àí
+	size_t length = strUnicode.length();
+	char *psText = new char[length*3+1];
+	wcstombs(psText, strUnicode.c_str(), length*3);
+	std::string strUtf8 = psText;
+	delete[] psText;	// psTextçš„æ¸…é™¤
+	return strUtf8;
+}
+
+//FaceServiceAPIå®ç°
+bool MygSoapProcess::FaceServiceAPI(const std::string& ReqType, const std::string& ReqJson, std::string& strResult)
+{
+	//è¯·æ±‚ç±»å‹ä¸ºç©º ç›´æ¥è¿”å›ï¼Œä¸å¤„ç†
 	if ("" == ReqType)
 	{
 		return false;
 	}
-	const char server[] = "http://192.168.0.156:6666/FACE?wsdl"; //·şÎñÆ÷µØÖ·
-	BasicHttpBinding_USCOREIFACEProxy gsoapFace;                 //´úÀí¶ÔÏó
-	gsoapFace.soap_endpoint = server;							 //Á¬½Ó·şÎñÆ÷µØÖ·£¬°ó¶¨·şÎñµØÖ·
-	_ns1__FaceService ReqObject;								 //ÇëÇó¶ÔÏó
-	_ns1__FaceServiceResponse RepObject;						 //·µ»Ø¶ÔÏó
-	ReqObject.type = StringToWchar_tP(ReqObject.type, ReqType);
-	ReqObject.json = StringToWchar_tP(ReqObject.json, ReqJson);
+	const char server[] = "http://192.168.0.156:6666/FACE?wsdl"; //æœåŠ¡å™¨åœ°å€
+	BasicHttpBinding_USCOREIFACEProxy gsoapFace;                 //ä»£ç†å¯¹è±¡
+	gsoapFace.soap_endpoint = server;							 //è¿æ¥æœåŠ¡å™¨åœ°å€ï¼Œç»‘å®šæœåŠ¡åœ°å€
+	_ns1__FaceService ReqObject;								 //è¯·æ±‚å¯¹è±¡
+	_ns1__FaceServiceResponse RepObject;						 //è¿”å›å¯¹è±¡
+	std::wstring strType, strJson;
+	strType = utf8ToUnicode(ReqType);
+	strJson = utf8ToUnicode(ReqJson);
+	ReqObject.type = (wchar_t*)strType.c_str();
+	ReqObject.json = (wchar_t*)strJson.c_str();
+	cout << ReqObject.type << endl;
+	cout << ReqObject.json << endl;
 	if (SOAP_OK == gsoapFace.FaceService(&ReqObject, RepObject))
 	{
-		cout << "µ÷ÓÃ³É¹¦" << endl;
-		if (Wchar_tToString(szReqJson, RepObject.FaceServiceResult))
-		{
-			//´¦Àí
-		}
+		strResult = unicodeToUtf8(RepObject.FaceServiceResult);
+		return true;
 	}
 	else 
 	{
-		cout << "µ÷ÓÃÊ§°Ü" << endl;
+		return false;
 	}
-	return true;
 }
