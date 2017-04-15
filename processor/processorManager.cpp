@@ -69,6 +69,9 @@ void ProcessorManager::run()
 
 void ProcessorManager::processHttpReq( const HttpRequest& req, HttpResponse& resp )
 {
+	CLogger::instance()->write_log(LOG_LEVEL_INFO, "收到http请求,httpType=%d, httpBody=%s",
+		                           req.httpType, req.httpBody.c_str());
+
 	switch (req.httpType)
 	{
 	case E_HTTP_UPLOAD_IMAGE:
@@ -119,6 +122,9 @@ void ProcessorManager::processHttpReq( const HttpRequest& req, HttpResponse& res
 			break;
 		}
 	}
+
+	CLogger::instance()->write_log(LOG_LEVEL_INFO, "返回http响应,httpBody=%s",
+		resp.httpBody.c_str());
 }
 
 bool ProcessorManager::isPriorityReq( E_HTTP_TYPE reqType )

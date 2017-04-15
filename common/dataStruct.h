@@ -19,10 +19,12 @@ struct ImageInfo
 {
 	std::string camerId;
 	std::string location;
+	std::string locationId; // read from db
 	int64_t monitorTime;
 	int gender;
 	std::string imageStr;
 	std::string templateId;
+	std::string photoPath;
 };
 
 struct TemplateInfo

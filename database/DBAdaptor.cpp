@@ -66,8 +66,7 @@ bool DBAdaptor::init( const std::string& username,
 								m_connectString,
 								m_minConn,
 								m_maxConn,
-								m_incrConn,
-			StatelessConnectionPool::HOMOGENEOUS);
+								m_incrConn);
 	}
 	catch (SQLException &e)
 	{

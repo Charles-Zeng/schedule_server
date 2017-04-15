@@ -22,14 +22,14 @@ bool DataLayer::saveImage( const ImageInfo& imageInfo )
 		Statement *stmt = connObj.conn->createStatement();
 		stmt->setSQL(sqlStr);
 		stmt->setString(1, generate_uuid_string());
-		stmt->setString(2, "52B0A8DCDDED4B7585000BB7E48D5C5D");
+		stmt->setString(2, imageInfo.locationId);
 
 		time_t monitorTime = imageInfo.monitorTime;
 		tm* timeInfo = localtime(&monitorTime);
 		std::string monitorTimeStr = time2Str(timeInfo, 1);	
 
 		stmt->setString(3, monitorTimeStr);
-		stmt->setString(4, "image/link/aaa.jpeg");
+		stmt->setString(4, imageInfo.photoPath);
 		stmt->setString(5, imageInfo.templateId);
 
 		stmt->executeUpdate();
@@ -42,7 +42,7 @@ bool DataLayer::saveImage( const ImageInfo& imageInfo )
 	{
 		CLogger::instance()->write_log(LOG_LEVEL_ERR, "%s:%d, 执行SQL出错: %s", __FILE__, __LINE__, e.what());
 	}
-
+	
 	return ret;
 }
 
@@ -139,6 +139,40 @@ bool DataLayer::saveSuspectAlarm( const SuspectAlarm& suspectAlarm )
 
 		stmt->executeUpdate();
 
+		connObj.conn->terminateStatement(stmt);
+
+		ret = true;
+	}
+	catch (exception &e)
+	{
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "%s:%d, 执行SQL出错: %s", __FILE__, __LINE__, e.what());
+	}
+
+	return ret;
+}
+
+bool DataLayer::getLocationId(const std::string& camerCode, std::string& locationId)
+{
+	bool ret = false;
+	std::string sqlStr = "SELECT LOCATION_ID FROM TB_CAMERA_INFO where CAMERA_CODE = :f1";
+
+	try
+	{
+		ConnectionObj connObj;
+
+		Statement *stmt = connObj.conn->createStatement();
+		stmt->setSQL(sqlStr);
+
+		stmt->setString(1, camerCode);
+
+		ResultSet *rs = stmt->executeQuery();
+
+		while (rs->next())
+		{
+			locationId = rs->getString(1);
+		}
+
+		stmt->closeResultSet(rs);
 		connObj.conn->terminateStatement(stmt);
 
 		ret = true;

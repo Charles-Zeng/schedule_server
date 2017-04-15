@@ -11,6 +11,7 @@ public:
 	static bool getOneToNGroupIds(std::string &groupIds);
 	static bool getAlarmParam(AlarmParam &alarmParam);
 	static bool saveSuspectAlarm(const SuspectAlarm& suspectAlarm);
+	static bool getLocationId(const std::string& camerCode, std::string& locationId);
 };
 
 #endif // _DATA_LAYER_H_
