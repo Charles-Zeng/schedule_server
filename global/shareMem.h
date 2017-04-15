@@ -1,17 +1,39 @@
+//////////////////////////////////////////////////////////////////////////  
+///    COPYRIGHT NOTICE
+///    Copyright (c) 2014, iNOKNOK
+///    All rights reserved.
+///
+/// @file		shareMem.h
+/// @brief	共享内存头文件
+///
+///	对共享内存的处理
+///
+/// @version	1.0
+/// @author	谢崇竹
+/// @date		2014.7.14
+//////////////////////////////////////////////////////////////////////////  
+
+
 #ifndef _SHARE_MEM_H_
 #define _SHARE_MEM_H_
 
 #include <sys/shm.h>
 #include <time.h>
 
-#define SHARE_MEM_KEY get_share_mem_key()
-
-typedef struct _share_memory_st
+/** 
+* @struct share_memory
+* @brief 共享内存中存放的数据结构
+*/
+typedef struct
 {
 	int run;
+	bool log_debug;
 	time_t last_access;
 }share_memory;
 
+///得到字符串的哈希值
+///@param	str	字符串指针
+///@return	字符串的哈希值
 unsigned int string_hash(char *str)
 {
     unsigned int hash = 0;
@@ -24,17 +46,18 @@ unsigned int string_hash(char *str)
     return (hash & 0x7FFFFFFF);
 }
 
-
+///获取共享内存的key
+///@return	共享内存key值
 static inline unsigned int get_share_mem_key()
 {
 	#define MAX_PATH_LEN 256
 	pid_t pid = getpid();
 	char proc[MAX_PATH_LEN] = {0};
 	char program[MAX_PATH_LEN] = {0};
-	ssize_t program_len = 0;
+	size_t program_len = 0;
 	sprintf(proc, "/proc/%d/exe", pid);
 	program_len = readlink(proc, program, sizeof(program));
-	if(-1 == program_len)
+	if((size_t)-1 == program_len)
 	{
 		return (unsigned int)-1;
 	}
@@ -42,6 +65,10 @@ static inline unsigned int get_share_mem_key()
 	return string_hash(program);
 }
 
+///创建共享内存
+///@param	shmid	共享内存id
+///@param	create	打开方式 0表示打开已有，非0表示创建并打开
+///@return	共享内存指针
 static inline void* create_share_memory(int* shmid, int create)
 {
 	void *shm = NULL;
@@ -55,7 +82,7 @@ static inline void* create_share_memory(int* shmid, int create)
 		shmflag = 0666;
 	}
 	
-	*shmid = shmget((key_t)SHARE_MEM_KEY, sizeof(share_memory), shmflag);
+	*shmid = shmget((key_t)get_share_mem_key(), sizeof(share_memory), shmflag);
 	if(*shmid == -1)
     {
         return NULL;
@@ -70,6 +97,9 @@ static inline void* create_share_memory(int* shmid, int create)
 	return shm;
 }
 
+///销毁共享内存
+///@param	shm		共享内存地址
+///@param	shmid	共享内存id
 static inline int destroy_share_memory(void* shm, int shmid)
 {
 	if(shmdt(shm) == -1)

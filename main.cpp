@@ -11,6 +11,52 @@
 #include "syscfg/sysConfig.h"
 #include "service/sysService.h"
 
+///设置调试日志标志
+void set_log_debug_flag(int* smhid, bool debug)
+{
+	void* shm = create_share_memory(smhid, 0);
+	if (!shm)
+	{
+		printf("无法找到共享内存,可能业务进程已退出\n");
+		return;
+	}
+	share_memory* shm_st = (share_memory*)shm;
+
+	shm_st->log_debug = debug;
+}
+
+///通过更改共享内存标志退出进程
+///@param	smhid	共享内存id
+void shutdown(int* smhid)
+{
+	void* shm = create_share_memory(smhid,0);
+	if(!shm)
+	{
+		printf("无法找到共享内存,可能业务进程已退出\n");
+		return;
+	}
+	share_memory* shm_st = (share_memory*)shm;
+
+	if(0 == shm_st->run || shm_st->last_access < time(0) - 1)
+	{
+		printf("业务进程未在运行\n");
+		return;
+	}
+
+	shm_st->run = 0;
+}
+
+///打印命令行参数说明
+void print_usage()
+{
+	printf("Useage:\n");
+	printf("-s	启动图像处理模块\n");
+	printf("-u	停止图像处理模块\n");
+	printf("-d	启用调试日志\n");
+	printf("-i	关闭调试日志\n");
+}
+
+///程序入口函数
 int main(int argc, char* argv[])
 {
 	int pid;
@@ -24,7 +70,7 @@ int main(int argc, char* argv[])
 
 	if(START == cmd)
 	{
-		if(0 != (pid = fork()))	//父进程
+		if((pid = fork()) != 0)	//父进程
 		{
 			return 0;
 		}
@@ -56,6 +102,7 @@ int main(int argc, char* argv[])
 			return 0;
 		}
 		shm_st->run = 1;
+		shm_st->log_debug = false;
 		shm_st->last_access = time(0);
 
 	FORK:
@@ -68,7 +115,7 @@ int main(int argc, char* argv[])
 					goto FORK;
 				}
 				shm_st->last_access = time(0);
-				usleep(100);
+				usleep(50000);
 			}
 
 			if(destroy_share_memory(shm, smhid) == -1)
@@ -86,6 +133,8 @@ int main(int argc, char* argv[])
 				return pid;
 			}
 		}
+
+		//在这里添加业务进程执行代码
 
 		CSysService svr;
 		//业务进程执行代码
@@ -106,39 +155,30 @@ int main(int argc, char* argv[])
 			}
 		}
 
-		sleep(2);
-
 		while(shm_st->run)
 		{
+			CLogger::instance()->set_log_debug(shm_st->log_debug);
 			sleep(1);
 		}
-		printf("业务进程已退出\n");
 	}
 	else if(SHUTDOWN == cmd)
 	{
-        CLogger::instance()->write_log(LOG_LEVEL_INFO, "关闭业务进程...");
-		shm = create_share_memory(&smhid,0);
-		if(!shm)
-		{
-			printf("无法找到共享内存,可能业务进程已退出\n");
-			return 0;
-		}
-		shm_st = (share_memory*)shm;
-
-		if(0 == shm_st->run || shm_st->last_access < time(0) - 1)
-		{
-			printf("业务进程未在运行\n");
-			return 0;
-		}
-
-        shm_st->run = 0;
-        CLogger::instance()->write_log(LOG_LEVEL_INFO, "进程已经退出");
+		shutdown(&smhid);
+	}
+	else if (OPENDEBUG == cmd)
+	{
+		set_log_debug_flag(&smhid, true);
+	}
+	else if (CLOSEDEBUG == cmd)
+	{
+		set_log_debug_flag(&smhid, false);
 	}
 	else
 	{
-		printf("命令行参数非法\n");
+		print_usage();
 	}
 
 	return 0;
 }
+
 
