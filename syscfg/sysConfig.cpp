@@ -48,6 +48,24 @@ bool CSysConfig::loadConfig()
 		CLogger::instance()->write_log(LOG_LEVEL_ERR, "读取数据库连接字符串置失败");
 		return false;
 	}
+	//读取数据库连接池最小连接数
+	if (!reader.getIntValue("database.poolMinConn", m_instance.m_dbConfig.m_poolMinConn))
+	{
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "读取数据库连接池最小连接数失败");
+		return false;
+	}
+	//读取数据库连接池最大连接数
+	if (!reader.getIntValue("database.poolMaxConn", m_instance.m_dbConfig.m_poolMaxConn))
+	{
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "读取数据库连接池最大连接数失败");
+		return false;
+	}
+	//读取数据库连接池连接数增加步长
+	if (!reader.getIntValue("database.poolIncrConn", m_instance.m_dbConfig.m_poolIncrConn))
+	{
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "读取数据库连接池连接数增加步长失败");
+		return false;
+	}
 	//读取业务处理线程个数
 	if (!reader.getIntValue("process.threadNum", m_instance.m_processConfig.m_threadNum))
 	{

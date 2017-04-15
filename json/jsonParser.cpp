@@ -53,6 +53,8 @@ bool CJsonParser::parseAddGroup(const std::string& strJson, std::string &groupNa
         }
 
         groupName = value["name"].asCString();
+
+		return true;
     }
 
     return false;
@@ -71,6 +73,8 @@ bool CJsonParser::parseDelGroup(const std::string& strJson, int64_t &groupId)
         }
 
         groupId = value["groupId"].asInt64();
+
+		return true;
     }
 
     return false;
@@ -93,6 +97,8 @@ bool CJsonParser::parseAddTemplate(const std::string &strJson, TemplateInfo& tem
         templateInfo.groupId = value["groupId"].asCString();
         templateInfo.gender = value["gender"].asInt();
         templateInfo.imageStr = value["image"].asCString();
+
+		return true;
     }
 
     return false;
@@ -111,6 +117,8 @@ bool CJsonParser::parseDelTemplate(const std::string &strJson, int32_t &template
         }
 
         templateId = value["templateId"].asInt();
+
+		return true;
     }
 
     return false;
@@ -128,8 +136,10 @@ bool CJsonParser::parseOneToOne(const std::string &strJson, OneToOneInfo &oneToO
             return false;
         }
 
-        oneToOneInfo.pic1Base64 = value["pic1"].asCString();\
+        oneToOneInfo.pic1Base64 = value["pic1"].asCString();
         oneToOneInfo.pic2Base64 = value["pic2"].asCString();
+
+		return true;
     }
 
     return false;
@@ -160,6 +170,8 @@ bool CJsonParser::parseOneToN(const std::string &strJson, OneToNInfo &oneToNInfo
             oneToNInfo.groupIds.push_back(atoi(strId.c_str()));
         }
         oneToNInfo.gender = value["gender"].asInt();
+
+		return true;
     }
 
     return false;

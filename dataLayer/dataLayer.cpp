@@ -2,6 +2,7 @@
 #include <database/DBAdaptor.h>
 #include <common/commonFunction.h>
 #include <logger/logger.h>
+#include "../tool/uuid.h"
 
 #include <time.h>
 #include <stdio.h>
@@ -12,7 +13,7 @@ bool DataLayer::saveImage( const ImageInfo& imageInfo )
 {
 	bool ret = false;
 
-	std::string sqlStr = "INSERT INTO TB_MONITOR_PHOTO ( CAMERA_ID, MONITOR_TIME, PHOTO, CASE_PHOTO_ID) VALUES( :f1, to_date( :f2,'YYYY-MM-DD HH24:MI:SS'), :f3, :f4 )";
+	std::string sqlStr = "INSERT INTO TB_MONITOR_PHOTO (ID, LOCATION_ID, MONITOR_TIME, PHOTO_PATH, CASE_PHOTO_ID) VALUES(:f1, :f2, to_date( :f3,'YYYY-MM-DD HH24:MI:SS'), :f4, :f5 )";
 
 	try
 	{
@@ -20,19 +21,19 @@ bool DataLayer::saveImage( const ImageInfo& imageInfo )
 
 		Statement *stmt = connObj.conn->createStatement();
 		stmt->setSQL(sqlStr);
-
-		stmt->setString(1, imageInfo.camerId);
+		stmt->setString(1, generate_uuid_string());
+		stmt->setString(2, "52B0A8DCDDED4B7585000BB7E48D5C5D");
 
 		time_t monitorTime = imageInfo.monitorTime;
 		tm* timeInfo = localtime(&monitorTime);
 		std::string monitorTimeStr = time2Str(timeInfo, 1);	
 
-		stmt->setString(2, monitorTimeStr);
-		stmt->setString(3, "");
-		stmt->setString(4, imageInfo.templateId);
+		stmt->setString(3, monitorTimeStr);
+		stmt->setString(4, "image/link/aaa.jpeg");
+		stmt->setString(5, imageInfo.templateId);
 
 		stmt->executeUpdate();
-
+		connObj.conn->commit();
 		connObj.conn->terminateStatement(stmt);
 
 		ret = true;

@@ -17,6 +17,8 @@ public:
 		return m_instance;
 	}
 
+	void processHttpReq(const HttpRequest& req, HttpResponse& resp);
+
 	bool init(std::size_t threadNum);	
 
 protected:
@@ -25,7 +27,6 @@ protected:
 
 private:
 	void run();
-	void processHttpReq(const HttpRequest& req, HttpResponse& resp);
 	bool isPriorityReq(E_HTTP_TYPE reqType);
 
 private:

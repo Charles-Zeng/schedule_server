@@ -6,6 +6,7 @@
 #include <common/commonFunction.h>
 #include <syscfg/sysConfig.h>
 
+
 void ProcessUploadImage::process( const HttpRequest& req, HttpResponse& resp )
 {
 	Json::Value respJson;
@@ -53,11 +54,13 @@ void ProcessUploadImage::process( const HttpRequest& req, HttpResponse& resp )
 		resp.httpBody = respJson.toStyledString().c_str();
 		return;
 	}
+
+	CLogger::instance()->write_log(LOG_LEVEL_INFO, "uploadImage: 保存图片信息到数据库成功");
 	
 
 	//3.动态1:N
 	DynamicOneToNReq oneToNReq;
-	oneToNReq.sourceId = ""; // how to get??
+	oneToNReq.sourceId = "souceId"; // how to get??
 	oneToNReq.pic = imageInfo.imageStr;
 
 	AlarmParam alarmParam;

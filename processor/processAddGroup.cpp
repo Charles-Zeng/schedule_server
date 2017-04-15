@@ -10,7 +10,7 @@ void ProcessAddGroup::process( const HttpRequest& req, HttpResponse& resp )
 	std::string groupName;
 	if (!CJsonParser::parseAddGroup(req.httpBody, groupName))
 	{
-		CLogger::instance()->write_log(LOG_LEVEL_ERR, "addGroup: ½âÎö°üÌåjsonÊ§°Ü. body: %s", req.httpBody.c_str());
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "addGroup: è§£æžåŒ…ä½“jsonå¤±è´¥. body: %s", req.httpBody.c_str());
 		respJson["code"] = 1;
 		respJson["message"] = "invalid body json parameter";
 		resp.bSuccess = true;
@@ -21,7 +21,7 @@ void ProcessAddGroup::process( const HttpRequest& req, HttpResponse& resp )
 	GetGroupIdResp getGroupIdResp;
 	if (!TemplateServerProxy::getGroupIdInfos(getGroupIdResp))
 	{
-		CLogger::instance()->write_log(LOG_LEVEL_ERR, "addGroup: »ñÈ¡¿âIDÐÅÏ¢Ê§°Ü: %s", getGroupIdResp.errorMsg.c_str());
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "addGroup: èŽ·å–åº“IDä¿¡æ¯å¤±è´¥: %s", getGroupIdResp.errorMsg.c_str());
 		respJson["code"] = 1;
 		respJson["message"] = getGroupIdResp.errorMsg.c_str();
 		resp.bSuccess = true;
@@ -38,7 +38,7 @@ void ProcessAddGroup::process( const HttpRequest& req, HttpResponse& resp )
 	AddGroupResp addGroupResp;
 	if (!TemplateServerProxy::addGroupId(newGroupIdInfo, addGroupResp))
 	{
-		CLogger::instance()->write_log(LOG_LEVEL_ERR, "addGroup: Ìí¼Ó¿âIDÊ§°Ü: %s", addGroupResp.errorMsg.c_str());
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "addGroup: æ·»åŠ åº“IDå¤±è´¥: %s", addGroupResp.errorMsg.c_str());
 		respJson["code"] = 1;
 		respJson["message"] = addGroupResp.errorMsg.c_str();
 		resp.bSuccess = true;

@@ -2,6 +2,7 @@
 #include "../syscfg/sysConfig.h"
 #include "../logger/logger.h"
 #include "../processor/processorManager.h"
+#include <database/DBAdaptor.h>
 
 CSysService::CSysService()
 {
@@ -14,6 +15,18 @@ CSysService::~CSysService()
 
 bool CSysService::start()
 {
+	std::string username = CSysConfig::instance().m_dbConfig.m_username;
+	std::string pwd = CSysConfig::instance().m_dbConfig.m_password;
+	std::string connStr = CSysConfig::instance().m_dbConfig.m_connection;
+	int poolMinConn = CSysConfig::instance().m_dbConfig.m_poolMinConn;
+	int poolMaxConn = CSysConfig::instance().m_dbConfig.m_poolMaxConn;
+	int poolIncrConn = CSysConfig::instance().m_dbConfig.m_poolIncrConn;
+	if (!DBAdaptor::instance()->init(username, pwd, connStr, poolMinConn, poolMaxConn, poolIncrConn))
+	{
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "初始化数据库失败");
+		return false;
+	}
+
 	int port = CSysConfig::instance().m_httpConfig.m_httpPort;
 	if (!m_httpSvr.init(port))
 	{
