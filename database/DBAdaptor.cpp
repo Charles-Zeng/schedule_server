@@ -17,7 +17,7 @@ DBAdaptor::DBAdaptor()
 
 DBAdaptor::~DBAdaptor()
 {
-	m_env->terminateConnectionPool(m_connPool);
+	m_env->terminateStatelessConnectionPool(m_connPool);
 	Environment::terminateEnvironment(m_env);
 	m_connPool = NULL;
 	m_env = NULL;
@@ -60,13 +60,14 @@ bool DBAdaptor::init( const std::string& username,
 	{
 		m_env = Environment::createEnvironment(Environment::THREADED_MUTEXED);
 
-		m_connPool = m_env->createConnectionPool(
+		m_connPool = m_env->createStatelessConnectionPool(
 								m_userName,
 								m_password,
 								m_connectString,
 								m_minConn,
 								m_maxConn,
-								m_incrConn);
+								m_incrConn,
+			StatelessConnectionPool::HOMOGENEOUS);
 	}
 	catch (SQLException &e)
 	{
@@ -84,12 +85,12 @@ bool DBAdaptor::init( const std::string& username,
 
 oracle::occi::Connection* DBAdaptor::getConnection()
 {
-	return m_connPool->createConnection(m_userName,m_password);
+	return m_connPool->getConnection();
 }
 
 void DBAdaptor::terminateConnection( oracle::occi::Connection* conn )
 {
-	m_connPool->terminateConnection(conn);
+	m_connPool->releaseConnection(conn);
 }
 
 

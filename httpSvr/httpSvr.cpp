@@ -3,6 +3,7 @@
 #include "../json/jsonParser.h"
 #include <string.h>
 #include "../dataQueue/dataQueue.h"
+#include "../processor/processorManager.h"
 
 CHttpSvr::CHttpSvr()
 {
@@ -62,6 +63,7 @@ int CHttpSvr::httpCallBack(void *cls,
 	void ** ptr)
 {
 	CHttpSvr *pThis = (CHttpSvr*)cls;
+	
 	if (strcmp(method, "POST"))
 	{
 		return MHD_NO;
@@ -70,7 +72,20 @@ int CHttpSvr::httpCallBack(void *cls,
 	{
 		return MHD_NO;
 	}
-	static int used;
+
+	HttpRequest req;
+	HttpResponse resp;
+	req.connection = connection;
+	const char* body = MHD_lookup_connection_value(connection, MHD_POSTDATA_KIND, NULL);
+	req.httpBody = body;
+	req.httpType = pThis->m_httpTypes[url];
+
+	ProcessorManager::instance().processHttpReq(req, resp);
+	pThis->buildRespons(connection, resp.bSuccess, resp.httpBody);
+
+	return MHD_YES;
+	
+	/*static int used;
 	if (*ptr != &used)
 	{
 		*ptr = &used; 
@@ -90,9 +105,10 @@ int CHttpSvr::httpCallBack(void *cls,
 		{
 			dataQueue.pushHttpReq(req);
 		}
+
 		return MHD_YES;
 	}
-	return MHD_YES;
+	return MHD_YES;*/
 }
 
 void * CHttpSvr::respProcThr(void *arg)

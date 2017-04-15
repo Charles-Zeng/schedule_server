@@ -40,7 +40,7 @@ private:
 	std::size_t m_incrConn;
 
 	oracle::occi::Environment *m_env;
-	oracle::occi::ConnectionPool *m_connPool;
+	oracle::occi::StatelessConnectionPool *m_connPool;
 };
 
 

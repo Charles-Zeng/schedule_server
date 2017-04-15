@@ -12,6 +12,9 @@ typedef struct stDbConfig
 	std::string m_username;	//数据库用户名
 	std::string m_password;	//数据库密码
 	std::string m_connection;	//连接字符串
+	int m_poolMinConn;
+	int m_poolMaxConn;
+	int m_poolIncrConn;
 }DbConfig;
 
 typedef struct stProcessConfig

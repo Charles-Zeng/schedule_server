@@ -3,6 +3,8 @@
 
 bool TemplateServerProxy::addGroupId( const GroupIdInfo& req, AddGroupResp& resp )
 {
+	resp.code = 0;
+	resp.id = "35";
 	return true;
 }
 
@@ -13,6 +15,8 @@ bool TemplateServerProxy::delGroupId( int64_t groupId, DelGroupResp& resp )
 
 bool TemplateServerProxy::addTemplate( const TemplateInfo& templateInfo, AddTemplateResp& resp )
 {
+	resp.code = 0;
+	resp.id = 11;
 	return true;
 }
 
@@ -28,6 +32,11 @@ bool TemplateServerProxy::dynamicOneToN( const DynamicOneToNReq& req, DynamicOne
 
 bool TemplateServerProxy::getGroupIdInfos( GetGroupIdResp& resp )
 {
+	resp.code = 0;
+	GroupIdInfo info;
+	info.id = 35;
+	info.name = "test";
+	resp.groupIdInfos.push_back(info);
 	return true;
 }
 
