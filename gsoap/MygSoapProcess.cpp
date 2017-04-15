@@ -2,7 +2,6 @@
 #include "BasicHttpBinding_USCOREIFACE.nsmap"
 #include "soapBasicHttpBinding_USCOREIFACEProxy.h"
 #include "stdsoap2.h"
-#include "MygSoapReqRepStruct.h"
 #include <sys/types.h>
 #include <stdio.h> 
 #include <locale.h>
@@ -56,8 +55,6 @@ bool MygSoapProcess::FaceServiceAPI(const std::string& ReqType, const std::strin
 	strJson = utf8ToUnicode(ReqJson);
 	ReqObject.type = (wchar_t*)strType.c_str();
 	ReqObject.json = (wchar_t*)strJson.c_str();
-	cout << ReqObject.type << endl;
-	cout << ReqObject.json << endl;
 	if (SOAP_OK == gsoapFace.FaceService(&ReqObject, RepObject))
 	{
 		strResult = unicodeToUtf8(RepObject.FaceServiceResult);
