@@ -14,7 +14,7 @@ void ProcessOneToOne::process( const HttpRequest& req, HttpResponse& resp )
 		respJson["code"] = 1;
 		respJson["message"] = "invalid body json";
 		resp.bSuccess = true;
-		resp.httpBody = respJson.toStyledString();
+		resp.httpBody = respJson.toStyledString().c_str();
 		return;
 	}
 
@@ -23,9 +23,9 @@ void ProcessOneToOne::process( const HttpRequest& req, HttpResponse& resp )
 	{
 		CLogger::instance()->write_log(LOG_LEVEL_ERR, "oneToOne: 获取人脸信息失败: %s", getFaceInfoResp.errorMsg.c_str());
 		respJson["code"] = 1;
-		respJson["message"] = getFaceInfoResp.errorMsg;
+		respJson["message"] = getFaceInfoResp.errorMsg.c_str();
 		resp.bSuccess = true;
-		resp.httpBody = respJson.toStyledString();
+		resp.httpBody = respJson.toStyledString().c_str();
 		return;
 	}
 
@@ -35,9 +35,9 @@ void ProcessOneToOne::process( const HttpRequest& req, HttpResponse& resp )
 	{
 		CLogger::instance()->write_log(LOG_LEVEL_ERR, "oneToOne: 获取人脸信息失败: %s", getFaceInfoResp.errorMsg.c_str());
 		respJson["code"] = 1;
-		respJson["message"] = getFaceInfoResp.errorMsg;
+		respJson["message"] = getFaceInfoResp.errorMsg.c_str();
 		resp.bSuccess = true;
-		resp.httpBody = respJson.toStyledString();
+		resp.httpBody = respJson.toStyledString().c_str();
 		return;
 	}
 
@@ -51,9 +51,9 @@ void ProcessOneToOne::process( const HttpRequest& req, HttpResponse& resp )
 	{
 		CLogger::instance()->write_log(LOG_LEVEL_ERR, "oneToOne: 1:1比对失败: %s", oneToOneResp.errorMsg.c_str());
 		respJson["code"] = 1;
-		respJson["message"] = oneToOneResp.errorMsg;
+		respJson["message"] = oneToOneResp.errorMsg.c_str();
 		resp.bSuccess = true;
-		resp.httpBody = respJson.toStyledString();
+		resp.httpBody = respJson.toStyledString().c_str();
 		return;
 	}
 
@@ -61,6 +61,6 @@ void ProcessOneToOne::process( const HttpRequest& req, HttpResponse& resp )
 	respJson["message"] = "success";
 	respJson["score"] = oneToOneResp.score;
 	resp.bSuccess = true;
-	resp.httpBody = respJson.toStyledString();
+	resp.httpBody = respJson.toStyledString().c_str();
 }
 

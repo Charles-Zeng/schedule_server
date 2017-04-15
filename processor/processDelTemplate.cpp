@@ -14,7 +14,7 @@ void ProcessDelTemplate::process( const HttpRequest& req, HttpResponse& resp )
 		respJson["code"] = 1;
 		respJson["message"] = "invalid body json";
 		resp.bSuccess = true;
-		resp.httpBody = respJson.toStyledString();
+		resp.httpBody = respJson.toStyledString().c_str();
 		return;
 	}
 
@@ -23,15 +23,15 @@ void ProcessDelTemplate::process( const HttpRequest& req, HttpResponse& resp )
 	{
 		CLogger::instance()->write_log(LOG_LEVEL_ERR, "delTemplate: É¾³ýÄ£°åIDÊ§°Ü: %s", delTemplateResp.errorMsg.c_str());
 		respJson["code"] = 1;
-		respJson["message"] = delTemplateResp.errorMsg;
+		respJson["message"] = delTemplateResp.errorMsg.c_str();
 		resp.bSuccess = true;
-		resp.httpBody = respJson.toStyledString();
+		resp.httpBody = respJson.toStyledString().c_str();
 		return;
 	}
 
 	respJson["code"] = 0;
 	respJson["message"] = "success";
 	resp.bSuccess = true;
-	resp.httpBody = respJson.toStyledString();
+	resp.httpBody = respJson.toStyledString().c_str();
 }
 

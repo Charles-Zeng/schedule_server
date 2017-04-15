@@ -17,7 +17,7 @@ void ProcessAddTemplate::process( const HttpRequest& req, HttpResponse& resp )
 		respJson["code"] = 1;
 		respJson["message"] = "invalid body json";
 		resp.bSuccess = true;
-		resp.httpBody = respJson.toStyledString();
+		resp.httpBody = respJson.toStyledString().c_str();
 		return;
 	}
 
@@ -26,17 +26,17 @@ void ProcessAddTemplate::process( const HttpRequest& req, HttpResponse& resp )
 	{
 		CLogger::instance()->write_log(LOG_LEVEL_ERR, "addTemplate: Ìí¼ÓÄ£°åÊ§°Ü: %s", addTemplateResp.errorMsg.c_str());
 		respJson["code"] = 1;
-		respJson["message"] = addTemplateResp.errorMsg;
+		respJson["message"] = addTemplateResp.errorMsg.c_str();
 		resp.bSuccess = true;
-		resp.httpBody = respJson.toStyledString();
+		resp.httpBody = respJson.toStyledString().c_str();
 		return;
 	}
 	
 
 	respJson["code"] = addTemplateResp.code;
-	respJson["message"] = addTemplateResp.errorMsg;
+	respJson["message"] = addTemplateResp.errorMsg.c_str();
 	respJson["templateID"] = addTemplateResp.id;
 	resp.bSuccess = true;
-	resp.httpBody = respJson.toStyledString();
+	resp.httpBody = respJson.toStyledString().c_str();
 }
 

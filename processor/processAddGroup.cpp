@@ -14,7 +14,7 @@ void ProcessAddGroup::process( const HttpRequest& req, HttpResponse& resp )
 		respJson["code"] = 1;
 		respJson["message"] = "invalid body json parameter";
 		resp.bSuccess = true;
-		resp.httpBody = respJson.toStyledString();
+		resp.httpBody = respJson.toStyledString().c_str();
 		return;
 	}
 
@@ -23,9 +23,9 @@ void ProcessAddGroup::process( const HttpRequest& req, HttpResponse& resp )
 	{
 		CLogger::instance()->write_log(LOG_LEVEL_ERR, "addGroup: 获取库ID信息失败: %s", getGroupIdResp.errorMsg.c_str());
 		respJson["code"] = 1;
-		respJson["message"] = getGroupIdResp.errorMsg;
+		respJson["message"] = getGroupIdResp.errorMsg.c_str();
 		resp.bSuccess = true;
-		resp.httpBody = respJson.toStyledString();
+		resp.httpBody = respJson.toStyledString().c_str();
 		return;
 	}
 
@@ -40,18 +40,18 @@ void ProcessAddGroup::process( const HttpRequest& req, HttpResponse& resp )
 	{
 		CLogger::instance()->write_log(LOG_LEVEL_ERR, "addGroup: 添加库ID失败: %s", addGroupResp.errorMsg.c_str());
 		respJson["code"] = 1;
-		respJson["message"] = addGroupResp.errorMsg;
+		respJson["message"] = addGroupResp.errorMsg.c_str();
 		resp.bSuccess = true;
-		resp.httpBody = respJson.toStyledString();
+		resp.httpBody = respJson.toStyledString().c_str();
 		return;
 	}
 
 	respJson["code"] = addGroupResp.code;
-	respJson["message"] = addGroupResp.errorMsg;
-	respJson["groupId"] = addGroupResp.id;
+	respJson["message"] = addGroupResp.errorMsg.c_str();
+	respJson["groupId"] = addGroupResp.id.c_str();
 
 	resp.bSuccess = true;
-	resp.httpBody = respJson.toStyledString();
+	resp.httpBody = respJson.toStyledString().c_str();
 }
 
 int ProcessAddGroup::getNewGroupId( const std::list<GroupIdInfo> &groupIdInfos )

@@ -15,7 +15,7 @@ void ProcessDelGroup::process( const HttpRequest& req, HttpResponse& resp )
 		respJson["code"] = 1;
 		respJson["message"] = "invalid body json";
 		resp.bSuccess = true;
-		resp.httpBody = respJson.toStyledString();
+		resp.httpBody = respJson.toStyledString().c_str();
 		return;
 	}
 
@@ -24,15 +24,15 @@ void ProcessDelGroup::process( const HttpRequest& req, HttpResponse& resp )
 	{
 		CLogger::instance()->write_log(LOG_LEVEL_ERR, "delGroup: É¾³ý¿âIDÊ§°Ü: %s", delGroupResp.errorMsg.c_str());
 		respJson["code"] = 1;
-		respJson["message"] = delGroupResp.errorMsg;
+		respJson["message"] = delGroupResp.errorMsg.c_str();
 		resp.bSuccess = true;
-		resp.httpBody = respJson.toStyledString();
+		resp.httpBody = respJson.toStyledString().c_str();
 		return;
 	}
 
 	respJson["code"] = delGroupResp.code;
-	respJson["message"] = delGroupResp.errorMsg;
+	respJson["message"] = delGroupResp.errorMsg.c_str();
 	resp.bSuccess = true;
-	resp.httpBody = respJson.toStyledString();
+	resp.httpBody = respJson.toStyledString().c_str();
 }
 

@@ -17,7 +17,7 @@ void ProcessUploadImage::process( const HttpRequest& req, HttpResponse& resp )
 		respJson["code"] = 1;
 		respJson["message"] = "invalid body json parameter";
 		resp.bSuccess = true;
-		resp.httpBody = respJson.toStyledString();
+		resp.httpBody = respJson.toStyledString().c_str();
 		return;
 	}
 
@@ -35,9 +35,9 @@ void ProcessUploadImage::process( const HttpRequest& req, HttpResponse& resp )
 	{
 		CLogger::instance()->write_log(LOG_LEVEL_ERR, "uploadImage: 添加模板失败:%s", addTemplateResp.errorMsg.c_str());
 		respJson["code"] = 1;
-		respJson["message"] = addTemplateResp.errorMsg;
+		respJson["message"] = addTemplateResp.errorMsg.c_str();
 		resp.bSuccess = true;
-		resp.httpBody = respJson.toStyledString();
+		resp.httpBody = respJson.toStyledString().c_str();
 		return;
 	}
 		
@@ -50,7 +50,7 @@ void ProcessUploadImage::process( const HttpRequest& req, HttpResponse& resp )
 		respJson["code"] = 1;
 		respJson["message"] = "save image to db failed";
 		resp.bSuccess = true;
-		resp.httpBody = respJson.toStyledString();
+		resp.httpBody = respJson.toStyledString().c_str();
 		return;
 	}
 	
@@ -67,7 +67,7 @@ void ProcessUploadImage::process( const HttpRequest& req, HttpResponse& resp )
 		respJson["code"] = 1;
 		respJson["message"] = "get alarm parameter failed";
 		resp.bSuccess = true;
-		resp.httpBody = respJson.toStyledString();
+		resp.httpBody = respJson.toStyledString().c_str();
 		return;
 	}
 	
@@ -79,9 +79,9 @@ void ProcessUploadImage::process( const HttpRequest& req, HttpResponse& resp )
 	{
 		CLogger::instance()->write_log(LOG_LEVEL_ERR, "uploadImage: 调用动态1:N失败:%s", oneToNResp.errorMessage.c_str());
 		respJson["code"] = 1;
-		respJson["message"] = oneToNResp.errorMessage;
+		respJson["message"] = oneToNResp.errorMessage.c_str();
 		resp.bSuccess = true;
-		resp.httpBody = respJson.toStyledString();
+		resp.httpBody = respJson.toStyledString().c_str();
 		return;
 	}
 
@@ -109,6 +109,6 @@ void ProcessUploadImage::process( const HttpRequest& req, HttpResponse& resp )
 	respJson["code"] = 0;
 	respJson["message"] = "success";
 	resp.bSuccess = true;
-	resp.httpBody = respJson.toStyledString();
+	resp.httpBody = respJson.toStyledString().c_str();
 }
 
