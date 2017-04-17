@@ -6,8 +6,9 @@
 
 class CJsonParser
 {
-public:
+private:
 	CJsonParser();
+public:
 	virtual ~CJsonParser();
 	static bool parseUploadImageJson(const std::string& strJson, ImageInfo& imageInfo);
     static bool parseAddGroup(const std::string& strJson, std::string& groupName);

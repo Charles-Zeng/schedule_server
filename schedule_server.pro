@@ -24,7 +24,8 @@ SOURCES += main.cpp \
     syscfg/cfgReader.cpp \
     syscfg/sysConfig.cpp \
     templateServer/templateServerProxy.cpp \
-    tool/base64/base64.cpp
+    tool/base64/base64.cpp \
+    json/jsonBuilder.cpp
 
 include(deployment.pri)
 qtcAddDeployment()
@@ -84,5 +85,6 @@ HEADERS += \
     syscfg/cfgReader.h \
     syscfg/sysConfig.h \
     templateServer/templateServerProxy.h \
-    tool/base64/base64.h
+    tool/base64/base64.h \
+    json/jsonBuilder.h
 
