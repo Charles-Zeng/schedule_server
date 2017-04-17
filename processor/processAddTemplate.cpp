@@ -33,8 +33,8 @@ void ProcessAddTemplate::process( const HttpRequest& req, HttpResponse& resp )
 	}
 	
 
-	respJson["code"] = addTemplateResp.code;
-	respJson["message"] = addTemplateResp.errorMsg.c_str();
+	respJson["code"] = HTTP_SUCCESS;
+	respJson["message"] = "success";
 	respJson["templateID"] = addTemplateResp.id;
 	resp.bSuccess = true;
 	resp.httpBody = respJson.toStyledString().c_str();

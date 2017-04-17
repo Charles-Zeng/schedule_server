@@ -57,7 +57,7 @@ void ProcessOneToOne::process( const HttpRequest& req, HttpResponse& resp )
 		return;
 	}
 
-	respJson["code"] = 0;
+	respJson["code"] = HTTP_SUCCESS;
 	respJson["message"] = "success";
 	respJson["score"] = oneToOneResp.score;
 	resp.bSuccess = true;

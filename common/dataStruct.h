@@ -15,6 +15,12 @@ enum Gender
 const int GROUP_ID_BEGAIN = 33;
 const int GROUP_ID_END = 126;
 
+const int HTTP_SUCCESS = 0;
+const int HTTP_FAILED = 1;
+
+const int GSOAP_SUCCESS = 1;
+const int GSOAP_FAILED = 0;
+
 struct ImageInfo
 {
 	std::string camerId;

@@ -124,7 +124,7 @@ void ProcessUploadImage::process( const HttpRequest& req, HttpResponse& resp )
 		
 	}
 
-	respJson["code"] = 0;
+	respJson["code"] = HTTP_SUCCESS;
 	respJson["message"] = "success";
 	resp.bSuccess = true;
 	resp.httpBody = respJson.toStyledString().c_str();

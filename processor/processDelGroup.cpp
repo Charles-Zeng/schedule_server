@@ -30,8 +30,8 @@ void ProcessDelGroup::process( const HttpRequest& req, HttpResponse& resp )
 		return;
 	}
 
-	respJson["code"] = delGroupResp.code;
-	respJson["message"] = delGroupResp.errorMsg.c_str();
+	respJson["code"] = HTTP_SUCCESS;
+	respJson["message"] = "success";
 	resp.bSuccess = true;
 	resp.httpBody = respJson.toStyledString().c_str();
 }

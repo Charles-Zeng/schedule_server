@@ -46,8 +46,8 @@ void ProcessAddGroup::process( const HttpRequest& req, HttpResponse& resp )
 		return;
 	}
 
-	respJson["code"] = addGroupResp.code;
-	respJson["message"] = addGroupResp.errorMsg.c_str();
+	respJson["code"] = HTTP_SUCCESS;
+	respJson["message"] = "success";
 	respJson["groupId"] = addGroupResp.id.c_str();
 
 	resp.bSuccess = true;

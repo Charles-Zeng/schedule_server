@@ -21,7 +21,7 @@ public:
 	bool FaceServiceAPI(const std::string& ReqType, /*请求类别*/
 						const std::string& ReqJson,/*请求json串*/
 						std::string& strResult); 
-	std::string szReqJson;                //返回的json值
+	//std::string szReqJson;                //返回的json值
 private:
 	std::wstring utf8ToUnicode(const std::string& strUtf8);           //utf8转unicode
 	std::string unicodeToUtf8(const std::wstring& strUnicode);

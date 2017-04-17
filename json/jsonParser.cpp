@@ -176,3 +176,49 @@ bool CJsonParser::parseOneToN(const std::string &strJson, OneToNInfo &oneToNInfo
 
     return false;
 }
+
+bool CJsonParser::parseAddGroupResp( const std::string& strJson, AddGroupResp& addGroupResp )
+{
+	Json::Reader reader;
+	Json::Value value;
+
+	if (reader.parse(strJson, value))
+	{
+		if(value["code"] == Json::Value::null || value["errorMessage"] == Json::Value::null
+			|| value["id"] == Json::Value::null)
+		{
+			return false;
+		}
+
+		addGroupResp.code = value["code"].asInt();
+		addGroupResp.errorMsg = value["errorMessage"].asCString();
+		addGroupResp.id = value["id"].asCString();		
+
+		return true;
+	}
+
+	return false;
+}
+
+bool CJsonParser::parseDelGroupResp( const std::string& strJson, DelGroupResp& delGroupResp )
+{
+	Json::Reader reader;
+	Json::Value value;
+
+	if (reader.parse(strJson, value))
+	{
+		if(value["code"] == Json::Value::null || value["errorMessage"] == Json::Value::null
+			|| value["id"] == Json::Value::null)
+		{
+			return false;
+		}
+
+		delGroupResp.code = value["code"].asInt();
+		delGroupResp.errorMsg = value["errorMessage"].asCString();
+		delGroupResp.id = value["id"].asCString();		
+
+		return true;
+	}
+
+	return false;
+}
