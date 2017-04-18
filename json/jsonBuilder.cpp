@@ -11,10 +11,11 @@ std::string CJsonBuilder::buildAddTemplate( const TemplateInfo& templateInfo )
 {
 	Json::Value value;
 
-	value["createTime"] = templateInfo.createTime;
-	value["gender"] = boost::lexical_cast<std::string>(templateInfo.gender);
-	value["groupId"] = templateInfo.groupId;
-	value["imgString"] = templateInfo.imageStr;
+	std::string genderStr = boost::lexical_cast<std::string>(templateInfo.gender);
+	value["createTime"] = templateInfo.createTime.c_str();
+	value["gender"] = genderStr.c_str();
+	value["groupId"] = templateInfo.groupId.c_str();
+	value["imgString"] = templateInfo.imageStr.c_str();
 
 	return value.toStyledString().c_str();
 }
@@ -33,7 +34,7 @@ std::string CJsonBuilder::buildAddGroupId( const GroupIdInfo& groupIdInfo )
 	Json::Value value;
 
 	value["id"] = groupIdInfo.id;
-	value["name"] = groupIdInfo.name;
+	value["name"] = groupIdInfo.name.c_str();;
 
 	return value.toStyledString().c_str();
 }
@@ -42,7 +43,7 @@ std::string CJsonBuilder::buildDelGroupId( const std::string& id )
 {
 	Json::Value value;
 
-	value["id"] = id;
+	value["id"] = id.c_str();;
 
 	return value.toStyledString().c_str();
 }
@@ -51,7 +52,7 @@ std::string CJsonBuilder::buildGetFaceInfo( const std::string& pic )
 {
 	Json::Value value;
 
-	value["pic"] = pic;
+	value["pic"] = pic.c_str();;
 
 	return value.toStyledString().c_str();
 }
@@ -60,8 +61,8 @@ std::string CJsonBuilder::buildOneToOne( const OneToOneInfo& oneToOneInfo )
 {
 	Json::Value value;
 
-	value["pic1"] = oneToOneInfo.pic1Base64;
-	value["pic2"] = oneToOneInfo.pic2Base64;
+	value["pic1"] = oneToOneInfo.pic1Base64.c_str();;
+	value["pic2"] = oneToOneInfo.pic2Base64.c_str();;
 
 	return value.toStyledString().c_str();
 }
@@ -77,11 +78,13 @@ std::string CJsonBuilder::buildOneToN( const OneToNInfo& oneToNInfo )
 
 	Json::Value value;
 
+	std::string genderStr = boost::lexical_cast<std::string>(oneToNInfo.gender);
+	std::string groupIdsStr = boost::algorithm::join(groupIdsStrList, ",");
 	value["threshold"] = oneToNInfo.threshold;
 	value["count"] = oneToNInfo.count;
-	value["gender"] = boost::lexical_cast<std::string>(oneToNInfo.gender);
-	value["groupIds"] = boost::algorithm::join(groupIdsStrList, ",");
-	value["pic"] = oneToNInfo.picBase64;
+	value["gender"] = genderStr.c_str();
+	value["groupIds"] = groupIdsStr.c_str();
+	value["pic"] = oneToNInfo.picBase64.c_str();
 
 	return value.toStyledString().c_str();
 }
@@ -90,11 +93,11 @@ std::string CJsonBuilder::buildDynamicOneToN( const DynamicOneToNReq& dynamicOne
 {
 	Json::Value value;
 
-	value["sourceID"] = dynamicOneToNReq.sourceId;
+	value["sourceID"] = dynamicOneToNReq.sourceId.c_str();
 	value["threshold"] = dynamicOneToNReq.threshold;
 	value["count"] = dynamicOneToNReq.count;
-	value["groupIds"] = dynamicOneToNReq.groupIds;
-	value["pic"] = dynamicOneToNReq.pic;
+	value["groupIds"] = dynamicOneToNReq.groupIds.c_str();
+	value["pic"] = dynamicOneToNReq.pic.c_str();
 
 	return value.toStyledString().c_str();
 }
