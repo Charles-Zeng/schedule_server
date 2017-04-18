@@ -120,7 +120,7 @@ struct Matche
 struct DynamicOneToNResp
 {
 	int code;
-	std::string errorMessage;
+	std::string errorMsg;
 	std::list<Matche> listMatches;
 };
 
@@ -190,6 +190,20 @@ struct OneToOneResp
 	int code;
 	std::string errorMsg;
 	float score;
+};
+
+struct MachingValue
+{
+	int id;
+	float score;
+};
+
+//静态1:N比对响应
+struct OneToNResp
+{
+	int code;
+	std::string errorMsg;
+	std::list<MachingValue> listMachingValues;
 };
 
 #endif // _DATA_STRUCT_H_

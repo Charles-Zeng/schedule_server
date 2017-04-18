@@ -14,6 +14,7 @@ static const std::string strDynamicOneToN = "SendFrame";	//动态1：N
 static const std::string strGetGroupInfos = "GetGroupId";	//查询库类别
 static const std::string strGetFaceInfo = "GetFaceInfo";	//获取人脸信息
 static const std::string strOneToOne = "OneToOne";			//1：1接口
+static const std::string strOneToN = "OneToN";              //静态1:N接口
 
 bool TemplateServerProxy::addGroupId( const GroupIdInfo& req, AddGroupResp& resp )
 {
@@ -73,39 +74,197 @@ bool TemplateServerProxy::delGroupId( int64_t groupId, DelGroupResp& resp )
 
 bool TemplateServerProxy::addTemplate( const TemplateInfo& templateInfo, AddTemplateResp& resp )
 {
-	resp.code = 0;
-	resp.id = 11;
+	std::string reqJson = CJsonBuilder::buildAddTemplate(templateInfo);
+
+	std::string respJson;
+	MygSoapProcess gSoapProxy;
+	if (!gSoapProxy.FaceServiceAPI(strAddTemplate, reqJson, respJson))
+	{
+		resp.code = 0;
+		resp.errorMsg = "invoke web service failed";
+		return false;
+	}
+
+	if (!CJsonParser::parseAddTemplateResp(respJson, resp))
+	{
+		resp.code = 0;
+		resp.errorMsg = "parse web service response failed";
+		return false;
+	}
+
+	if (GSOAP_FAILED == resp.code)
+	{
+		return false;
+	}
+
 	return true;
 }
 
 bool TemplateServerProxy::delTemplate( int id, DelTemplateResp& resp )
 {
+	std::string reqJson = CJsonBuilder::buildDelTemplate(id);
+
+	std::string respJson;
+	MygSoapProcess gSoapProxy;
+	if (!gSoapProxy.FaceServiceAPI(strDelTemplate, reqJson, respJson))
+	{
+		resp.code = 0;
+		resp.errorMsg = "invoke web service failed";
+		return false;
+	}
+
+	if (!CJsonParser::parseDelTemplateResp(respJson, resp))
+	{
+		resp.code = 0;
+		resp.errorMsg = "parse web service response failed";
+		return false;
+	}
+
+	if (GSOAP_FAILED == resp.code)
+	{
+		return false;
+	}
+
 	return true;
 }
 
 bool TemplateServerProxy::dynamicOneToN( const DynamicOneToNReq& req, DynamicOneToNResp& resp )
 {
+	std::string reqJson = CJsonBuilder::buildDynamicOneToN(req);
+
+	std::string respJson;
+	MygSoapProcess gSoapProxy;
+	if (!gSoapProxy.FaceServiceAPI(strDynamicOneToN, reqJson, respJson))
+	{
+		resp.code = 0;
+		resp.errorMsg = "invoke web service failed";
+		return false;
+	}
+
+	if (!CJsonParser::parseDynamicOneToNResp(respJson, resp))
+	{
+		resp.code = 0;
+		resp.errorMsg = "parse web service response failed";
+		return false;
+	}
+
+	if (GSOAP_FAILED == resp.code)
+	{
+		return false;
+	}
+
 	return true;
 }
 
 bool TemplateServerProxy::getGroupIdInfos( GetGroupIdResp& resp )
 {
-	resp.code = 0;
-	GroupIdInfo info;
-	info.id = 35;
-	info.name = "test";
-	resp.groupIdInfos.push_back(info);
+	std::string respJson;
+	MygSoapProcess gSoapProxy;
+	if (!gSoapProxy.FaceServiceAPI(strGetGroupInfos, "", respJson))
+	{
+		resp.code = 0;
+		resp.errorMsg = "invoke web service failed";
+		return false;
+	}
+
+	if (!CJsonParser::parseGetGroupIdResp(respJson, resp))
+	{
+		resp.code = 0;
+		resp.errorMsg = "parse web service response failed";
+		return false;
+	}
+
+	if (GSOAP_FAILED == resp.code)
+	{
+		return false;
+	}
+
 	return true;
 }
 
 bool TemplateServerProxy::getFaceInfo( const std::string pic, GetFaceInfoResp& resp )
 {
+	std::string reqJson = CJsonBuilder::buildGetFaceInfo(pic);
+
+	std::string respJson;
+	MygSoapProcess gSoapProxy;
+	if (!gSoapProxy.FaceServiceAPI(strGetFaceInfo, reqJson, respJson))
+	{
+		resp.code = 0;
+		resp.errorMsg = "invoke web service failed";
+		return false;
+	}
+
+	if (!CJsonParser::parseGetFaceInfoResp(respJson, resp))
+	{
+		resp.code = 0;
+		resp.errorMsg = "parse web service response failed";
+		return false;
+	}
+
+	if (GSOAP_FAILED == resp.code)
+	{
+		return false;
+	}
+
 	return true;
 }
 
 bool TemplateServerProxy::oneToOne( const OneToOneInfo& req, OneToOneResp& resp )
 {
+	std::string reqJson = CJsonBuilder::buildOneToOne(req);
+
+	std::string respJson;
+	MygSoapProcess gSoapProxy;
+	if (!gSoapProxy.FaceServiceAPI(strOneToOne, reqJson, respJson))
+	{
+		resp.code = 0;
+		resp.errorMsg = "invoke web service failed";
+		return false;
+	}
+
+	if (!CJsonParser::parseOneToOneResp(respJson, resp))
+	{
+		resp.code = 0;
+		resp.errorMsg = "parse web service response failed";
+		return false;
+	}
+
+	if (GSOAP_FAILED == resp.code)
+	{
+		return false;
+	}
+
 	return true;
 }
+
+bool TemplateServerProxy::oneToN( const OneToNInfo& req, OneToNResp& resp )
+{
+	std::string reqJson = CJsonBuilder::buildOneToN(req);
+
+	std::string respJson;
+	MygSoapProcess gSoapProxy;
+	if (!gSoapProxy.FaceServiceAPI(strOneToN, reqJson, respJson))
+	{
+		resp.code = 0;
+		resp.errorMsg = "invoke web service failed";
+		return false;
+	}
+
+	if (!CJsonParser::parseOneToNResp(respJson, resp))
+	{
+		resp.code = 0;
+		resp.errorMsg = "parse web service response failed";
+		return false;
+	}
+
+	if (GSOAP_FAILED == resp.code)
+	{
+		return false;
+	}
+
+	return true;
+}
+
 
 

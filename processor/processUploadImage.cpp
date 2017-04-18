@@ -95,9 +95,9 @@ void ProcessUploadImage::process( const HttpRequest& req, HttpResponse& resp )
 	DynamicOneToNResp oneToNResp;
 	if (!TemplateServerProxy::dynamicOneToN(oneToNReq, oneToNResp))
 	{
-		CLogger::instance()->write_log(LOG_LEVEL_ERR, "uploadImage:调用动态1:N失败:%s", oneToNResp.errorMessage.c_str());
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "uploadImage:调用动态1:N失败:%s", oneToNResp.errorMsg.c_str());
 		respJson["code"] = 1;
-		respJson["message"] = oneToNResp.errorMessage.c_str();
+		respJson["message"] = oneToNResp.errorMsg.c_str();
 		resp.bSuccess = true;
 		resp.httpBody = respJson.toStyledString().c_str();
 		return;

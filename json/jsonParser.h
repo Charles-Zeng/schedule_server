@@ -21,5 +21,12 @@ public:
 	//web service œÏ”¶Ω‚Œˆ
 	static bool parseAddGroupResp(const std::string& strJson, AddGroupResp& addGroupResp);
 	static bool parseDelGroupResp(const std::string& strJson, DelGroupResp& delGroupResp);
+	static bool parseAddTemplateResp(const std::string& strJson, AddTemplateResp& addTemplateResp);
+	static bool parseDelTemplateResp(const std::string& strJson, DelTemplateResp& delTemplateResp);
+	static bool parseDynamicOneToNResp(const std::string& strJson, DynamicOneToNResp& dynamicOneToNResp);
+	static bool parseGetGroupIdResp(const std::string& strJson, GetGroupIdResp& getGroupIdResp);
+	static bool parseGetFaceInfoResp(const std::string& strJson, GetFaceInfoResp& getFaceInfoResp);
+	static bool parseOneToOneResp(const std::string& strJson, OneToOneResp& oneToOneResp);
+	static bool parseOneToNResp(const std::string& strJson, OneToNResp& oneToNResp);
 };
 

@@ -14,6 +14,7 @@ public:
 	static bool getGroupIdInfos(GetGroupIdResp& resp);
 	static bool getFaceInfo(const std::string pic, GetFaceInfoResp& resp);
 	static bool oneToOne(const OneToOneInfo& req, OneToOneResp& resp);
+	static bool oneToN(const OneToNInfo& req, OneToNResp& resp);
 };
 
 #endif // _TEMPLATE_SERVER_PROXY_H_
