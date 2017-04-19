@@ -27,6 +27,6 @@ AUX_SOURCE_DIRECTORY(./gsoap SRC_LIST)
 
 LINK_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/occi/lib)
 
-LINK_LIBRARIES(pthread microhttpd jsoncpp ccl nnz11 clntsh occi boost_system boost_timer-mt boost_thread-mt uuid)
+LINK_LIBRARIES(pthread microhttpd jsoncpp ccl nnz11 clntsh occi boost_system boost_timer-mt boost_thread-mt uuid event)
 
 ADD_EXECUTABLE(schedule_server ${SRC_LIST})

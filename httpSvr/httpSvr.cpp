@@ -4,17 +4,17 @@
 #include <string.h>
 #include "../dataQueue/dataQueue.h"
 #include "../processor/processorManager.h"
+#include <boost/thread.hpp>
 
 CHttpSvr::CHttpSvr()
 {
-	m_httpTypes["/uploadImage"] = E_HTTP_UPLOAD_IMAGE;
-	m_httpTypes["/addGroupId"] = E_HTTP_ADD_GROUP;
-	m_httpTypes["/deleteGroupId"] = E_HTTP_DEL_GROUP;
-	m_httpTypes["/addTemplate"] = E_HTTP_ADD_TEMPLATE;
-	m_httpTypes["/deleteTemplate"] = E_HTTP_DEL_TEMPLATE;
-	m_httpTypes["/oneToOne"] = E_HTTP_ONE_TO_ONE;
-	m_httpTypes["/oneToN"] = E_HTTP_ONE_TO_N;
-	m_pHttpDaemon = NULL;
+    m_httpTypes["/uploadImage"] = E_HTTP_UPLOAD_IMAGE;
+    m_httpTypes["/addGroupId"] = E_HTTP_ADD_GROUP;
+    m_httpTypes["/deleteGroupId"] = E_HTTP_DEL_GROUP;
+    m_httpTypes["/addTemplate"] = E_HTTP_ADD_TEMPLATE;
+    m_httpTypes["/deleteTemplate"] = E_HTTP_DEL_TEMPLATE;
+    m_httpTypes["/oneToOne"] = E_HTTP_ONE_TO_ONE;
+    m_httpTypes["/oneToN"] = E_HTTP_ONE_TO_N;
 }
 
 
@@ -22,117 +22,67 @@ CHttpSvr::~CHttpSvr()
 {
 }
 
-bool CHttpSvr::init(int port)
+void CHttpSvr::init(int port)
 {
-	
-	//如果已经开启服务
-	if (m_pHttpDaemon)
-	{
-		return true;
-	}
-
-	//启动http服务
-	m_pHttpDaemon = MHD_start_daemon(MHD_USE_EPOLL_INTERNALLY_LINUX_ONLY,
-		port, NULL, NULL, httpCallBack, this, MHD_OPTION_END);
-	//开启应答处理线程
-	if (m_pHttpDaemon)
-	{
-		pthread_create(&m_thr, NULL, respProcThr, this);
-	}
-	
-	return m_pHttpDaemon ? true : false;
-
+    boost::thread thr_init(boost::bind(&CHttpSvr::__init, this, _1), port);
+    boost::thread thr_proc(boost::bind(&CHttpSvr::processHttpResp, this));
 }
 
-void CHttpSvr::finit()
+void CHttpSvr::__init(int port)
 {
-	if (m_pHttpDaemon)
-	{
-		MHD_stop_daemon(m_pHttpDaemon);
-		m_pHttpDaemon = NULL;
-	}
+    event_init();
+    struct evhttp *httpd;
+    httpd = evhttp_start("0.0.0.0", port);
+    evhttp_set_gencb(httpd, httpd_handler, this);
+    event_dispatch();
 }
 
-int CHttpSvr::httpCallBack(void *cls,
-	MHD_Connection *connection,
-	const char* url,
-	const char* method,
-	const char* version,
-	const char* upload_data,
-	size_t *upload_data_size,
-	void ** ptr)
+void CHttpSvr::httpd_handler(evhttp_request *req, void *arg)
 {
-	CHttpSvr *pThis = (CHttpSvr*)cls;
-	
-	if (strcmp(method, "POST"))
-	{
-		return MHD_NO;
-	}
-	if (pThis->m_httpTypes.find(url) == pThis->m_httpTypes.end())
-	{
-		return MHD_NO;
-	}
-
-	HttpRequest req;
-	HttpResponse resp;
-	req.connection = connection;
-	const char* body = MHD_lookup_connection_value(connection, MHD_POSTDATA_KIND, NULL);
-	req.httpBody = body;
-	req.httpType = pThis->m_httpTypes[url];
-
-	ProcessorManager::instance().processHttpReq(req, resp);
-	pThis->buildRespons(connection, resp.bSuccess, resp.httpBody);
-
-	return MHD_YES;
-	
-	/*static int used;
-	if (*ptr != &used)
-	{
-		*ptr = &used; 
-		CLogger::instance()->write_log(LOG_LEVEL_INFO, "收到Http请求,url=%s, method=%s",
-			url, method);
-		const char* body = MHD_lookup_connection_value(connection, MHD_POSTDATA_KIND, NULL);
-		HttpRequest req;
-		req.connection = connection;
-		req.httpBody = body;
-		req.httpType = pThis->m_httpTypes[url];
-		CDataQueue& dataQueue = CDataQueue::instance();
-		if (req.httpType == E_HTTP_ONE_TO_ONE || req.httpType == E_HTTP_ONE_TO_N)
-		{
-			dataQueue.pushHttpReq(req, true);
-		}
-		else
-		{
-			dataQueue.pushHttpReq(req);
-		}
-
-		return MHD_YES;
-	}
-	return MHD_YES;*/
+    CHttpSvr *pThis = static_cast<CHttpSvr*>(arg);
+    const char *uri = evhttp_request_uri(req);
+    if(evhttp_request_get_command(req) == EVHTTP_REQ_POST)
+    {
+        if(pThis->m_httpTypes.find(uri) == pThis->m_httpTypes.end())
+        {
+            pThis->sendHttpResp(req, HTTP_BADREQUEST, "Invalid url");
+            return;
+        }
+        char *post_data = (char *) EVBUFFER_DATA(req->input_buffer);
+        HttpRequest httpReq;
+        httpReq.connection = req;
+        httpReq.httpBody = post_data;
+        httpReq.httpType = pThis->m_httpTypes[uri];
+        CDataQueue::instance().pushHttpReq(httpReq,
+                                           httpReq.httpType == E_HTTP_ONE_TO_ONE || httpReq.httpType == E_HTTP_ONE_TO_N ? true : false);
+    }
+    else
+    {
+        pThis->sendHttpResp(req, HTTP_BADREQUEST, "Unsupport method");
+    }
 }
 
-void * CHttpSvr::respProcThr(void *arg)
+void CHttpSvr::sendHttpResp(evhttp_request *req, int code, const string &body)
 {
-	CHttpSvr* pThis = (CHttpSvr*)arg;
-	CDataQueue& dataQueue = CDataQueue::instance();
-	for (;;)
-	{
-		HttpResponse resp;
-		if (!dataQueue.getHttpResp(resp))
-		{
-			usleep(5000);
-			continue;
-		}
-		MHD_Connection *connection = (MHD_Connection*)resp.connection;
-		pThis->buildRespons(connection, resp.bSuccess, resp.httpBody);
-	}
-	return NULL;
+    evbuffer *buf = evbuffer_new();
+    evbuffer_add_printf(buf, "%s", body.c_str());
+    evhttp_add_header(req->output_headers, "Content-Type", "application/json");
+    evhttp_add_header(req->output_headers, "Connection", "close");
+    evhttp_send_reply(req, code, "", buf);
+    evbuffer_free(buf);
 }
 
-void CHttpSvr::buildRespons(MHD_Connection * connection, bool bSuccess, const std::string & strBody)
+void CHttpSvr::processHttpResp()
 {
-	MHD_Response *response = MHD_create_response_from_data(strBody.length(), (void*)strBody.c_str(), MHD_NO, MHD_YES);
-	MHD_add_response_header(response, MHD_HTTP_HEADER_CONTENT_TYPE, "application/json");
-	MHD_queue_response(connection, bSuccess ? MHD_HTTP_OK : MHD_HTTP_INTERNAL_SERVER_ERROR, response);
-	MHD_destroy_response(response);
+    for(;;)
+    {
+        HttpResponse resp;
+        if(!CDataQueue::instance().getHttpResp(resp))
+        {
+            boost::this_thread::sleep(boost::posix_time::milliseconds(50));
+            continue;
+        }
+        sendHttpResp(static_cast<evhttp_request*>(resp.connection),
+                     resp.bSuccess ? HTTP_OK : HTTP_INTERNAL, resp.httpBody.c_str());
+    }
 }
