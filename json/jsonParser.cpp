@@ -3,6 +3,7 @@
 #include <boost/tokenizer.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/foreach.hpp>
+#include <boost/lexical_cast.hpp>
 #include <vector>
 
 CJsonParser::CJsonParser()
@@ -72,7 +73,7 @@ bool CJsonParser::parseDelGroup(const std::string& strJson, int64_t &groupId)
             return false;
         }
 
-        groupId = value["groupId"].asInt64();
+        groupId = boost::lexical_cast<int64_t>(value["groupId"].asCString());
 
 		return true;
     }
@@ -184,15 +185,19 @@ bool CJsonParser::parseAddGroupResp( const std::string& strJson, AddGroupResp& a
 
 	if (reader.parse(strJson, value))
 	{
-		if(value["code"] == Json::Value::null || value["errorMessage"] == Json::Value::null
+		if(value["code"] == Json::Value::null
 			|| value["id"] == Json::Value::null)
 		{
 			return false;
 		}
 
-		addGroupResp.code = value["code"].asInt();
-		addGroupResp.errorMsg = value["errorMessage"].asCString();
-		addGroupResp.id = value["id"].asCString();		
+		addGroupResp.code = value["code"].asInt();		
+		addGroupResp.id = boost::lexical_cast<std::string>(value["id"].asInt());
+
+		if (value["errorMessage"] != Json::Value::null)
+		{
+			addGroupResp.errorMsg = value["errorMessage"].asCString();
+		}
 
 		return true;
 	}
@@ -207,15 +212,18 @@ bool CJsonParser::parseDelGroupResp( const std::string& strJson, DelGroupResp& d
 
 	if (reader.parse(strJson, value))
 	{
-		if(value["code"] == Json::Value::null || value["errorMessage"] == Json::Value::null
-			|| value["id"] == Json::Value::null)
+		if(value["code"] == Json::Value::null || value["id"] == Json::Value::null)
 		{
 			return false;
 		}
 
-		delGroupResp.code = value["code"].asInt();
-		delGroupResp.errorMsg = value["errorMessage"].asCString();
-		delGroupResp.id = value["id"].asCString();		
+		delGroupResp.code = value["code"].asInt();		
+		delGroupResp.id = value["id"].asInt();
+
+		if (value["errorMessage"] != Json::Value::null)
+		{
+			delGroupResp.errorMsg = value["errorMessage"].asCString();
+		}
 
 		return true;
 	}
@@ -230,15 +238,18 @@ bool CJsonParser::parseAddTemplateResp( const std::string& strJson, AddTemplateR
 
 	if (reader.parse(strJson, value))
 	{
-		if(value["code"] == Json::Value::null || value["errorMessage"] == Json::Value::null
+		if(value["code"] == Json::Value::null
 			|| value["id"] == Json::Value::null)
 		{
 			return false;
 		}
 
-		addTemplateResp.code = value["code"].asInt();
-		addTemplateResp.errorMsg = value["errorMessage"].asCString();
-		addTemplateResp.id = value["id"].asInt();		
+		addTemplateResp.code = value["code"].asInt();		
+		addTemplateResp.id = value["id"].asInt();
+		if (value["errorMessage"] != Json::Value::null)
+		{
+			addTemplateResp.errorMsg = value["errorMessage"].asCString();
+		}
 
 		return true;
 	}
@@ -253,15 +264,18 @@ bool CJsonParser::parseDelTemplateResp( const std::string& strJson, DelTemplateR
 
 	if (reader.parse(strJson, value))
 	{
-		if(value["code"] == Json::Value::null || value["errorMessage"] == Json::Value::null
+		if(value["code"] == Json::Value::null
 			|| value["id"] == Json::Value::null)
 		{
 			return false;
 		}
 
-		delTemplateResp.code = value["code"].asInt();
-		delTemplateResp.errorMsg = value["errorMessage"].asCString();
-		delTemplateResp.id = value["id"].asInt();		
+		delTemplateResp.code = value["code"].asInt();		
+		delTemplateResp.id = value["id"].asInt();
+		if (value["errorMessage"] != Json::Value::null)
+		{
+			delTemplateResp.errorMsg = value["errorMessage"].asCString();
+		}
 
 		return true;
 	}
@@ -276,14 +290,18 @@ bool CJsonParser::parseDynamicOneToNResp( const std::string& strJson, DynamicOne
 
 	if (reader.parse(strJson, value))
 	{
-		if(value["code"] == Json::Value::null || value["errorMessage"] == Json::Value::null
+		if(value["code"] == Json::Value::null
 			|| value["listMatches"] == Json::Value::null)
 		{
 			return false;
 		}
 
 		dynamicOneToNResp.code = value["code"].asInt();
-		dynamicOneToNResp.errorMsg = value["errorMessage"].asCString();
+		
+		if (value["errorMessage"] != Json::Value::null)
+		{
+			dynamicOneToNResp.errorMsg = value["errorMessage"].asCString();
+		}
 
 		Json::Value matchArray = value["listMatches"];
 		if (!matchArray.isArray())
@@ -313,14 +331,18 @@ bool CJsonParser::parseGetGroupIdResp( const std::string& strJson, GetGroupIdRes
 
 	if (reader.parse(strJson, value))
 	{
-		if(value["code"] == Json::Value::null || value["errorMessage"] == Json::Value::null
+		if(value["code"] == Json::Value::null
 			|| value["groupIdInfos"] == Json::Value::null)
 		{
 			return false;
 		}
 
 		getGroupIdResp.code = value["code"].asInt();
-		getGroupIdResp.errorMsg = value["errorMessage"].asCString();
+		if (value["errorMessage"] != Json::Value::null)
+		{
+			getGroupIdResp.errorMsg = value["errorMessage"].asCString();
+		}
+		
 
 		Json::Value groupIdInfoArray = value["groupIdInfos"];
 		if (!groupIdInfoArray.isArray())
@@ -349,14 +371,18 @@ bool CJsonParser::parseGetFaceInfoResp( const std::string& strJson, GetFaceInfoR
 
 	if (reader.parse(strJson, value))
 	{
-		if(value["code"] == Json::Value::null || value["errorMessage"] == Json::Value::null
+		if(value["code"] == Json::Value::null
 			|| value["faceInfos"] == Json::Value::null)
 		{
 			return false;
 		}
 
 		getFaceInfoResp.code = value["code"].asInt();
-		getFaceInfoResp.errorMsg = value["errorMessage"].asCString();
+		
+		if (value["errorMessage"] != Json::Value::null)
+		{
+			getFaceInfoResp.errorMsg = value["errorMessage"].asCString();
+		}
 
 		Json::Value faceInfo = value["faceInfos"];
 		if (!faceInfo.isObject())
@@ -380,15 +406,18 @@ bool CJsonParser::parseOneToOneResp( const std::string& strJson, OneToOneResp& o
 
 	if (reader.parse(strJson, value))
 	{
-		if(value["code"] == Json::Value::null || value["errorMessage"] == Json::Value::null
+		if(value["code"] == Json::Value::null
 			|| value["score"] == Json::Value::null)
 		{
 			return false;
 		}
 
-		oneToOneResp.code = value["code"].asInt();
-		oneToOneResp.errorMsg = value["errorMessage"].asCString();
+		oneToOneResp.code = value["code"].asInt();		
 		oneToOneResp.score = value["score"].asFloat();
+		if (value["errorMessage"] != Json::Value::null)
+		{
+			oneToOneResp.errorMsg = value["errorMessage"].asCString();
+		}
 
 		return true;
 	}
@@ -403,14 +432,18 @@ bool CJsonParser::parseOneToNResp( const std::string& strJson, OneToNResp& oneTo
 
 	if (reader.parse(strJson, value))
 	{
-		if(value["code"] == Json::Value::null || value["errorMessage"] == Json::Value::null
+		if(value["code"] == Json::Value::null
 			|| value["listMachingValues"] == Json::Value::null)
 		{
 			return false;
 		}
 
 		oneToNResp.code = value["code"].asInt();
-		oneToNResp.errorMsg = value["errorMessage"].asCString();
+		
+		if (value["errorMessage"] != Json::Value::null)
+		{
+			oneToNResp.errorMsg = value["errorMessage"].asCString();
+		}
 
 		Json::Value matchingArray = value["listMachingValues"];
 		if (!matchingArray.isArray())

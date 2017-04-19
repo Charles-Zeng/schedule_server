@@ -6,6 +6,7 @@
 #include <stdio.h> 
 #include <locale.h>
 #include <stdlib.h>
+#include <logger/logger.h>
 
 MygSoapProcess::MygSoapProcess()
 {
@@ -21,6 +22,7 @@ std::wstring MygSoapProcess::utf8ToUnicode(const std::string& strUtf8)
 {
 	size_t length = strUtf8.length();
 	wchar_t *szDstTemp = new wchar_t[length+1];
+	wmemset(szDstTemp, 0, length + 1);
 	mbstowcs(szDstTemp, strUtf8.c_str(), length);
 	std::wstring strUnicode = szDstTemp;
 	delete[] szDstTemp; // 析构该内存
@@ -31,6 +33,7 @@ std::string MygSoapProcess::unicodeToUtf8(const std::wstring& strUnicode)
 {
 	size_t length = strUnicode.length();
 	char *psText = new char[length*3+1];
+	memset(psText, 0, length * 3 + 1);
 	wcstombs(psText, strUnicode.c_str(), length*3);
 	std::string strUtf8 = psText;
 	delete[] psText;	// psText的清除
@@ -58,6 +61,7 @@ bool MygSoapProcess::FaceServiceAPI(const std::string& ReqType, const std::strin
 	if (SOAP_OK == gsoapFace.FaceService(&ReqObject, RepObject))
 	{
 		strResult = unicodeToUtf8(RepObject.FaceServiceResult);
+		CLogger::instance()->write_log(LOG_LEVEL_INFO, "webservice: resp json %s", strResult.c_str());
 		return true;
 	}
 	else 
