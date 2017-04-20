@@ -223,7 +223,7 @@ void CLogger::write_log(LOG_LEVEL lvl, string formate,...)
 	char fmt_buf[4096];
 	va_list arg_lst;
 	va_start(arg_lst, formate);
-	vsprintf(fmt_buf, formate.c_str(), arg_lst);
+	vsnprintf(fmt_buf, 4090, formate.c_str(), arg_lst);
 	va_end(arg_lst);
 
 	LOG_CONTENT* log_content = new LOG_CONTENT;

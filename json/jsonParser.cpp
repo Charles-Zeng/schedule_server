@@ -371,8 +371,7 @@ bool CJsonParser::parseGetFaceInfoResp( const std::string& strJson, GetFaceInfoR
 
 	if (reader.parse(strJson, value))
 	{
-		if(value["code"] == Json::Value::null
-			|| value["faceInfos"] == Json::Value::null)
+		if(value["code"] == Json::Value::null)
 		{
 			return false;
 		}
@@ -384,14 +383,28 @@ bool CJsonParser::parseGetFaceInfoResp( const std::string& strJson, GetFaceInfoR
 			getFaceInfoResp.errorMsg = value["errorMessage"].asCString();
 		}
 
-		Json::Value faceInfo = value["faceInfos"];
-		if (!faceInfo.isObject())
+		if (value["faceInfos"] == Json::Value::null)
 		{
 			return false;
 		}
 
-		getFaceInfoResp.faceInfo.qualityScore = faceInfo["qualityScore"].asFloat();
-		getFaceInfoResp.faceInfo.facePic = faceInfo["facePic"].asCString();
+		Json::Value faceInfoArray = value["faceInfos"];
+		if (!faceInfoArray.isArray())
+		{
+			return false;
+		}
+
+		getFaceInfoResp.faceInfo.qualityScore = 0.0001;
+		for (int i = 0; i < faceInfoArray.size(); i++)
+		{
+			float qualityScore = faceInfoArray[i]["qualityScore"].asFloat();
+			if (qualityScore > getFaceInfoResp.faceInfo.qualityScore)
+			{
+				getFaceInfoResp.faceInfo.qualityScore = faceInfoArray[i]["qualityScore"].asFloat();
+				getFaceInfoResp.faceInfo.facePic = faceInfoArray[i]["facePic"].asCString();
+			}
+
+		}
 
 		return true;
 	}

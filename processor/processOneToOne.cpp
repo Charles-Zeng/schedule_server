@@ -7,17 +7,21 @@ void ProcessOneToOne::process( const HttpRequest& req, HttpResponse& resp )
 {
 	Json::Value respJson;
 	OneToOneInfo oneToOneInfo;
+	//图片太大,预先分配内存
+	//oneToOneInfo.pic1Base64.reserve(100 * 1024);
+	//oneToOneInfo.pic2Base64.reserve(100 * 1024);
 
 	if (!CJsonParser::parseOneToOne(req.httpBody, oneToOneInfo))
 	{
-		CLogger::instance()->write_log(LOG_LEVEL_ERR, "oneToOne: 解析包体json失败. body: %s", req.httpBody.c_str());
+
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "oneToOne: 解析包体json失败.");
 		respJson["code"] = 1;
 		respJson["message"] = "invalid body json";
 		resp.bSuccess = true;
 		resp.httpBody = respJson.toStyledString().c_str();
 		return;
 	}
-
+	/*
 	GetFaceInfoResp getFaceInfoResp;
 	if (!TemplateServerProxy::getFaceInfo(oneToOneInfo.pic1Base64, getFaceInfoResp))
 	{
@@ -42,10 +46,10 @@ void ProcessOneToOne::process( const HttpRequest& req, HttpResponse& resp )
 	}
 
 	FaceInfo pic2FaceInfo = getFaceInfoResp.faceInfo;
-
+	*/
 	OneToOneInfo oneToOneReq;
-	oneToOneReq.pic1Base64 = pic1FaceInfo.facePic;
-	oneToOneReq.pic2Base64 = pic2FaceInfo.facePic;
+	oneToOneReq.pic1Base64 = oneToOneInfo.pic1Base64;
+	oneToOneReq.pic2Base64 = oneToOneInfo.pic2Base64;
 	OneToOneResp oneToOneResp;
 	if (!TemplateServerProxy::oneToOne(oneToOneReq, oneToOneResp))
 	{

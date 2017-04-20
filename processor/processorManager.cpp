@@ -69,8 +69,12 @@ void ProcessorManager::run()
 
 void ProcessorManager::processHttpReq( const HttpRequest& req, HttpResponse& resp )
 {
-	CLogger::instance()->write_log(LOG_LEVEL_INFO, "收到http请求,httpType=%d, httpBody=%s",
-		                           req.httpType, req.httpBody.c_str());
+	if (req.httpBody.size() < 1024)
+	{
+		CLogger::instance()->write_log(LOG_LEVEL_INFO, "收到http请求,httpType=%d, httpBody=%s",
+			req.httpType, req.httpBody.c_str());
+	}
+	
 
 	switch (req.httpType)
 	{
