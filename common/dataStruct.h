@@ -81,8 +81,9 @@ typedef enum _httpType
 	E_HTTP_ADD_TEMPLATE,
 	E_HTTP_DEL_TEMPLATE,
 	E_HTTP_ONE_TO_ONE,
-	E_HTTP_ONE_TO_N
-
+	E_HTTP_ONE_TO_N,
+	//add liyong 20170420添加获取人脸信息接口
+	E_HTTP_GET_FACE_INFO
 }E_HTTP_TYPE;
 
 struct HttpRequest
@@ -176,6 +177,12 @@ struct FaceInfo
 	float qualityScore;
 };
 
+//add liyong 20170420 添加获取人脸信息请求
+struct GetFaceInfoReq
+{
+	//请求人脸字符串
+	std::string picBase64;
+};
 //获取人脸信息响应
 struct GetFaceInfoResp
 {

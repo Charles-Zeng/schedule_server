@@ -8,7 +8,7 @@ class CJsonBuilder
 {
 public:
 	static std::string buildAddTemplate(const TemplateInfo& templateInfo);
-	static std::string buildDelTemplate(int id);
+	static std::string buildDelTemplate(std::string id);
 	static std::string buildAddGroupId(const GroupIdInfo& groupIdInfo);
 	static std::string buildDelGroupId(const std::string& id);
 	static std::string buildGetFaceInfo(const std::string& pic);

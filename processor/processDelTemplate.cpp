@@ -6,7 +6,7 @@
 void ProcessDelTemplate::process( const HttpRequest& req, HttpResponse& resp )
 {
 	Json::Value respJson;
-	int32_t templateId;
+	std::string templateId;
 
 	if (!CJsonParser::parseDelTemplate(req.httpBody, templateId))
 	{

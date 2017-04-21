@@ -15,6 +15,7 @@ CHttpSvr::CHttpSvr()
     m_httpTypes["/deleteTemplate"] = E_HTTP_DEL_TEMPLATE;
     m_httpTypes["/oneToOne"] = E_HTTP_ONE_TO_ONE;
     m_httpTypes["/oneToN"] = E_HTTP_ONE_TO_N;
+	m_httpTypes["/getFaceInfo"] = E_HTTP_GET_FACE_INFO;   //暴露获取人脸信息接口
 }
 
 

@@ -13,6 +13,7 @@
 #include "processDelTemplate.h"
 #include "processOneToOne.h"
 #include "processOneToN.h"
+#include "processGetFaceInfo.h"
 
 
 ProcessorManager::ProcessorManager()
@@ -118,6 +119,12 @@ void ProcessorManager::processHttpReq( const HttpRequest& req, HttpResponse& res
 		{
 			ProcessOneToN oneToN;
 			oneToN.process(req, resp);
+			break;
+		}
+	case E_HTTP_GET_FACE_INFO:
+		{
+			ProcessGetFaceInfo getFaceInfo;
+			getFaceInfo.process(req, resp);
 			break;
 		}
 	default:

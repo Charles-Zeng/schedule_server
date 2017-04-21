@@ -14,17 +14,17 @@ std::string CJsonBuilder::buildAddTemplate( const TemplateInfo& templateInfo )
 	std::string genderStr = boost::lexical_cast<std::string>(templateInfo.gender);
 	value["createTime"] = templateInfo.createTime.c_str();
 	value["gender"] = genderStr.c_str();
-	value["groupId"] = templateInfo.groupId.c_str();
+	value["groupIds"] = templateInfo.groupId.c_str();  //由于建模那边json字段grounId改为grounIds
 	value["imgString"] = templateInfo.imageStr.c_str();
 
 	return value.toStyledString().c_str();
 }
 
-std::string CJsonBuilder::buildDelTemplate( int id )
+std::string CJsonBuilder::buildDelTemplate(std::string id )
 {
 	Json::Value value;
 
-	value["id"] = id;
+	value["id"] = boost::lexical_cast<int>(id);
 
 	return value.toStyledString().c_str();
 }

@@ -85,18 +85,18 @@ bool CJsonParser::parseAddTemplate(const std::string &strJson, TemplateInfo& tem
 {
     Json::Reader reader;
     Json::Value value;
-
+	//由于建模那边json字段grounId改为grounIds
     if (reader.parse(strJson, value))
     {
-        if(value["createTime"] == Json::Value::null || value["groupId"] == Json::Value::null
+        if(value["createTime"] == Json::Value::null || value["groupIds"] == Json::Value::null
                 || value["gender"] == Json::Value::null || value["image"] == Json::Value::null)
         {
             return false;
         }
 
         templateInfo.createTime = value["createTime"].asCString();
-        templateInfo.groupId = value["groupId"].asCString();
-        templateInfo.gender = value["gender"].asInt();
+        templateInfo.groupId = value["groupIds"].asCString();
+        templateInfo.gender = boost::lexical_cast<int>(value["gender"].asCString());
         templateInfo.imageStr = value["image"].asCString();
 
 		return true;
@@ -105,7 +105,7 @@ bool CJsonParser::parseAddTemplate(const std::string &strJson, TemplateInfo& tem
     return false;
 }
 
-bool CJsonParser::parseDelTemplate(const std::string &strJson, int32_t &templateId)
+bool CJsonParser::parseDelTemplate(const std::string &strJson, std::string &templateId)
 {
     Json::Reader reader;
     Json::Value value;
@@ -117,12 +117,31 @@ bool CJsonParser::parseDelTemplate(const std::string &strJson, int32_t &template
             return false;
         }
 
-        templateId = value["templateId"].asInt();
+        templateId = value["templateId"].asCString();
 
 		return true;
     }
 
     return false;
+}
+//add liyong 20170420 
+bool CJsonParser::parseGetFaceInfo(const std::string& strJson, GetFaceInfoReq& getfaceinfo)
+{
+	Json::Reader reader;
+	Json::Value value;
+
+	if (reader.parse(strJson, value))
+	{
+		if (value["pic"] == Json::Value::null)
+		{
+			return false;
+		}
+
+		getfaceinfo.picBase64 = value["pic"].asCString();
+		return true;
+	}
+
+	return false;
 }
 
 bool CJsonParser::parseOneToOne(const std::string &strJson, OneToOneInfo &oneToOneInfo)
@@ -309,7 +328,7 @@ bool CJsonParser::parseDynamicOneToNResp( const std::string& strJson, DynamicOne
 			return false;
 		}
 
-		for (int i = 0; i < matchArray.size(); i++)
+		for (unsigned int i = 0; i < matchArray.size(); i++)
 		{
 			Matche match;
 			match.id = matchArray[i]["id"].asInt();
@@ -350,7 +369,7 @@ bool CJsonParser::parseGetGroupIdResp( const std::string& strJson, GetGroupIdRes
 			return false;
 		}
 
-		for (int i = 0; i < groupIdInfoArray.size(); i++)
+		for (unsigned int i = 0; i < groupIdInfoArray.size(); i++)
 		{
 			GroupIdInfo info;
 			info.id = groupIdInfoArray[i]["id"].asInt();
@@ -395,7 +414,7 @@ bool CJsonParser::parseGetFaceInfoResp( const std::string& strJson, GetFaceInfoR
 		}
 
 		getFaceInfoResp.faceInfo.qualityScore = 0.0001;
-		for (int i = 0; i < faceInfoArray.size(); i++)
+		for (unsigned int i = 0; i < faceInfoArray.size(); i++)
 		{
 			float qualityScore = faceInfoArray[i]["qualityScore"].asFloat();
 			if (qualityScore > getFaceInfoResp.faceInfo.qualityScore)
@@ -464,7 +483,7 @@ bool CJsonParser::parseOneToNResp( const std::string& strJson, OneToNResp& oneTo
 			return false;
 		}
 
-		for (int i = 0; i < matchingArray.size(); i++)
+		for (unsigned int i = 0; i < matchingArray.size(); i++)
 		{
 			MachingValue match;
 			match.id = matchingArray[i]["id"].asInt();

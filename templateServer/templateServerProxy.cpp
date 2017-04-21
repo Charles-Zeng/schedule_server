@@ -100,7 +100,7 @@ bool TemplateServerProxy::addTemplate( const TemplateInfo& templateInfo, AddTemp
 	return true;
 }
 
-bool TemplateServerProxy::delTemplate( int id, DelTemplateResp& resp )
+bool TemplateServerProxy::delTemplate(std::string id, DelTemplateResp& resp )
 {
 	std::string reqJson = CJsonBuilder::buildDelTemplate(id);
 
