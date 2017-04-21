@@ -31,7 +31,7 @@ bool CSysConfig::loadConfig()
 	}
 
 	//读取数据库用户名
-	if(!reader.getStringValue("database.username", m_instance.m_dbConfig.m_username))
+	if (!reader.getStringValue("database.username", m_instance.m_dbConfig.m_username))
 	{
 		CLogger::instance()->write_log(LOG_LEVEL_ERR, "读取数据库用户名配置失败");
 		return false;
@@ -77,6 +77,16 @@ bool CSysConfig::loadConfig()
 	{
 		CLogger::instance()->write_log(LOG_LEVEL_ERR, "读取默认库ID配置失败");
 		return false;
+	}
+
+	//读取默认图片路径
+	if (!reader.getStringValue("storage.root", m_storageConfig.m_rootPath))
+	{
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "读取图片存储路径失败");
+	}
+	else
+	{
+		CLogger::instance()->write_log(LOG_LEVEL_INFO, "当前图片存储路径为:%s", m_storageConfig.m_rootPath.c_str());
 	}
 
 	return true;

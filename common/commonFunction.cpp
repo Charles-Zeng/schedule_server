@@ -31,6 +31,9 @@ std::string time2Str( struct tm *lt, int nFormat )
 	case 7: //转换格式：yyyymmddhhmiss
 		timeStr = boost::str(boost::format("%d%02d%02d%02d%02d%02d") % (lt->tm_year + 1900) % (lt->tm_mon + 1) % lt->tm_mday % lt->tm_hour % lt->tm_min % lt->tm_sec);
 		break;
+	case 8: //转换格式：yyyymmdd
+		timeStr = boost::str(boost::format("%d%02d%02d") % (lt->tm_year + 1900) % (lt->tm_mon + 1) % lt->tm_mday);
+		break;
 	default:
 		break;
 	}

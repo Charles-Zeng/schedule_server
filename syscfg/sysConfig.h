@@ -17,6 +17,11 @@ typedef struct stDbConfig
 	int m_poolIncrConn;
 }DbConfig;
 
+typedef struct stStorageConfig
+{
+	std::string m_rootPath;
+}StorageConfig;
+
 typedef struct stProcessConfig
 {
 	int m_threadNum;
@@ -36,5 +41,6 @@ public:
 	HttpConfig m_httpConfig;
 	DbConfig m_dbConfig;
 	ProcessConfig m_processConfig;
+	stStorageConfig m_storageConfig;
 };
 

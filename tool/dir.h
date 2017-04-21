@@ -7,6 +7,11 @@
 
 static inline bool createDir(const char *path)
 {
+	if (0 == access(path, F_OK))
+	{
+		return true;
+	}
+
 	int i, len;
 
 	len = strlen(path);

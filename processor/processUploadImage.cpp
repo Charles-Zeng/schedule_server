@@ -5,6 +5,14 @@
 #include <dataLayer/dataLayer.h>
 #include <common/commonFunction.h>
 #include <syscfg/sysConfig.h>
+#include <sys/time.h>
+#include <boost/lexical_cast.hpp>
+#include "../syscfg/sysConfig.h"
+#include "../common/commonFunction.h"
+#include "../tool/dir.h"
+#include "../tool/base64/base64.h"
+#include <fstream>
+#include <boost/scoped_array.hpp>
 
 
 void ProcessUploadImage::process( const HttpRequest& req, HttpResponse& resp )
@@ -22,7 +30,20 @@ void ProcessUploadImage::process( const HttpRequest& req, HttpResponse& resp )
 		return;
 	}
 
-	imageInfo.photoPath = "image/link/bbb.jpeg";
+	//save image
+	std::string strPath, strFileName;
+	getImageFilePath(strPath, strFileName);
+	if (!saveImageFile(strPath, strFileName, imageInfo.imageStr))
+	{
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "uploadImage:保存本地图片失败:%s", (strPath+"/"+strFileName).c_str());
+		respJson["code"] = 1;
+		respJson["message"] = "Save local image failed";
+		resp.bSuccess = true;
+		resp.httpBody = respJson.toStyledString().c_str();
+		return;
+	}
+	CLogger::instance()->write_log(LOG_LEVEL_INFO, "uploadImage:保存本地图片成功:%s", (strPath + "/" + strFileName).c_str());
+	imageInfo.photoPath = strPath + "/" + strFileName;
 
 	//1.add template
 	TemplateInfo templateInfo;
@@ -130,3 +151,45 @@ void ProcessUploadImage::process( const HttpRequest& req, HttpResponse& resp )
 	resp.httpBody = respJson.toStyledString().c_str();
 }
 
+void ProcessUploadImage::getImageFilePath(std::string & strPath, std::string & strFileName)
+{
+	std::string strRegionCode;
+	std::string strAreaCode;
+	std::string strLocationCode;
+
+	struct timeval tv;
+	gettimeofday(&tv, NULL);
+	uint64_t _misc = tv.tv_sec * 1000 + tv.tv_usec / 1000;
+	strFileName = std::string("ZDJKRYK_") + boost::lexical_cast<std::string>(_misc) + ".jpeg";
+
+	time_t _time = time(NULL);
+	tm* timeInfo = localtime(&_time);
+	strPath = CSysConfig::instance().m_storageConfig.m_rootPath + "/" + time2Str(timeInfo, 8) + "/"
+		+ strRegionCode + "/" + strAreaCode + "/" + strLocationCode;
+}
+
+bool ProcessUploadImage::saveImageFile(const std::string strPath, const std::string &strFileName,
+	const std::string& content_base64)
+{
+	std::string strFullName = strPath + "/" + strFileName;
+	createDir(strPath.c_str());
+
+	boost::scoped_array<uint8_t> buffer(new uint8_t[content_base64.length()]);
+	if (!buffer)
+	{
+		return false;
+	}
+
+	int len = CBase64::DecodeBase64(reinterpret_cast<const uint8_t*>(content_base64.c_str()), buffer.get(),
+		content_base64.length());
+	ofstream out(strFullName.c_str(), ios::binary);
+	if (!out)
+	{
+		return false;
+	}
+
+	out.write(reinterpret_cast<const char*>(buffer.get()), len);
+	bool bRet = out.good();
+	out.close();
+	return bRet;
+}

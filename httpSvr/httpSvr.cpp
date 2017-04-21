@@ -34,6 +34,11 @@ void CHttpSvr::__init(int port)
     event_init();
     struct evhttp *httpd;
     httpd = evhttp_start("0.0.0.0", port);
+	if (!httpd)
+	{
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "Æô¶¯http·þÎñÊ§°Ü");
+		return;
+	}
     evhttp_set_gencb(httpd, httpd_handler, this);
     event_dispatch();
 }
