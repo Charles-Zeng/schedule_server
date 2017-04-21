@@ -4,6 +4,7 @@
 #include <json/json.h>
 #include <common/dataStruct.h>
 #include <templateServer/templateServerProxy.h>
+#include <boost/lexical_cast.hpp>
 
 void ProcessGetFaceInfo::process(const HttpRequest& req, HttpResponse& resp)
 {
@@ -32,7 +33,8 @@ void ProcessGetFaceInfo::process(const HttpRequest& req, HttpResponse& resp)
 
 	respJson["code"] = HTTP_SUCCESS;
 	respJson["message"] = "success";
-
+	//返回请求接口中的json体 strRespJson
+	respJson["faceInfos"] = getFaceInfoResp.strRespJson;
 	resp.bSuccess = true;
 	resp.httpBody = respJson.toStyledString().c_str();
 }

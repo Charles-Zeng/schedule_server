@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <string>
 #include <list>
+#include <json/json.h>
 
 enum Gender
 {
@@ -189,6 +190,8 @@ struct GetFaceInfoResp
 	int code;
 	std::string errorMsg;
 	FaceInfo faceInfo;
+	//由于接口调整变化故返回请求的人脸json丢给客户端 添加字段strRespJson
+	Json::Value strRespJson;
 };
 
 //1:1比对响应

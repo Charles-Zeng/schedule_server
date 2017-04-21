@@ -406,14 +406,14 @@ bool CJsonParser::parseGetFaceInfoResp( const std::string& strJson, GetFaceInfoR
 		{
 			return false;
 		}
-
+		//add liyong 将返回的faceInfos 值返回给客户端
 		Json::Value faceInfoArray = value["faceInfos"];
 		if (!faceInfoArray.isArray())
 		{
 			return false;
 		}
-
-		getFaceInfoResp.faceInfo.qualityScore = 0.0001;
+		getFaceInfoResp.strRespJson = faceInfoArray;
+		/*getFaceInfoResp.faceInfo.qualityScore = 0.0001;
 		for (unsigned int i = 0; i < faceInfoArray.size(); i++)
 		{
 			float qualityScore = faceInfoArray[i]["qualityScore"].asFloat();
@@ -423,7 +423,7 @@ bool CJsonParser::parseGetFaceInfoResp( const std::string& strJson, GetFaceInfoR
 				getFaceInfoResp.faceInfo.facePic = faceInfoArray[i]["facePic"].asCString();
 			}
 
-		}
+		}*/
 
 		return true;
 	}
