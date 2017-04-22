@@ -185,3 +185,102 @@ bool DataLayer::getLocationId(const std::string& camerCode, std::string& locatio
 	return ret;
 }
 
+bool DataLayer::getLocationCode( const std::string& camerCode, std::string& locationCode )
+{
+	bool ret = false;
+	std::string sqlStr = "SELECT TB_MONITOR_LOCATION.LOCATION_CODE FROM TB_CAMERA_INFO INNER JOIN TB_MONITOR_LOCATION \
+						 ON TB_CAMERA_INFO.LOCATION_ID = TB_MONITOR_LOCATION.ID  where TB_CAMERA_INFO.CAMERA_CODE = :f1";
+
+	try
+	{
+		ConnectionObj connObj;
+
+		Statement *stmt = connObj.conn->createStatement();
+		stmt->setSQL(sqlStr);
+
+		stmt->setString(1, camerCode);
+
+		ResultSet *rs = stmt->executeQuery();
+
+		while (rs->next())
+		{
+			locationCode = rs->getString(1);
+		}
+
+		stmt->closeResultSet(rs);
+		connObj.conn->terminateStatement(stmt);
+
+		ret = true;
+	}
+	catch (exception &e)
+	{
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "%s:%d, 执行SQL出错: %s", __FILE__, __LINE__, e.what());
+	}
+
+	return ret;
+}
+
+bool DataLayer::getAreaCode( std::string& areaCode )
+{
+	bool ret = false;
+	std::string sqlStr = "SELECT AREA_CODE FROM TB_MONITOR_AREA";
+
+	try
+	{
+		ConnectionObj connObj;
+
+		Statement *stmt = connObj.conn->createStatement();
+		stmt->setSQL(sqlStr);
+
+		ResultSet *rs = stmt->executeQuery();
+
+		while (rs->next())
+		{
+			areaCode = rs->getString(1);
+		}
+
+		stmt->closeResultSet(rs);
+		connObj.conn->terminateStatement(stmt);
+
+		ret = true;
+	}
+	catch (exception &e)
+	{
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "%s:%d, 执行SQL出错: %s", __FILE__, __LINE__, e.what());
+	}
+
+	return ret;
+}
+
+bool DataLayer::getRegionCode( std::string& regionCode )
+{
+	bool ret = false;
+	std::string sqlStr = "SELECT REGION_CODE FROM SYS_REGION_INFO";
+
+	try
+	{
+		ConnectionObj connObj;
+
+		Statement *stmt = connObj.conn->createStatement();
+		stmt->setSQL(sqlStr);
+
+		ResultSet *rs = stmt->executeQuery();
+
+		while (rs->next())
+		{
+			regionCode = rs->getString(1);
+		}
+
+		stmt->closeResultSet(rs);
+		connObj.conn->terminateStatement(stmt);
+
+		ret = true;
+	}
+	catch (exception &e)
+	{
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "%s:%d, 执行SQL出错: %s", __FILE__, __LINE__, e.what());
+	}
+
+	return ret;
+}
+

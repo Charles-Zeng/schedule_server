@@ -9,7 +9,7 @@ class ProcessUploadImage : public Processor
 public:
 	void process(const HttpRequest& req, HttpResponse& resp);
 protected:
-	void getImageFilePath(std::string& strPath, std::string& strFileName);
+	bool getImageFilePath(const std::string& camerCode, std::string& strPath, std::string& strFileName);
 	bool saveImageFile(const std::string strPath, const std::string &strFileName,
 		const std::string& content_base64);
 };

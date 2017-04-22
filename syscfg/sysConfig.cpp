@@ -79,6 +79,19 @@ bool CSysConfig::loadConfig()
 		return false;
 	}
 
+	std::string url;
+	//读取webservice地址
+	if (!reader.getStringValue("process.webserviceUrls", url))
+	{
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "读取webservice地址失败");
+		return false;
+	}
+	else
+	{
+		m_instance.m_processConfig.m_webSrvList.push_back(url);
+		CLogger::instance()->write_log(LOG_LEVEL_INFO, "webservice地址为:%s", url.c_str());
+	}
+
 	//读取默认图片路径
 	if (!reader.getStringValue("storage.root", m_storageConfig.m_rootPath))
 	{

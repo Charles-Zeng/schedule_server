@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 typedef struct stHttpConfig
 {
@@ -26,6 +27,7 @@ typedef struct stProcessConfig
 {
 	int m_threadNum;
 	std::string m_defaultGroupId;
+	std::vector<std::string> m_webSrvList;
 }ProcessConfig;
 
 class CSysConfig

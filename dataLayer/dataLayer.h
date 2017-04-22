@@ -12,6 +12,9 @@ public:
 	static bool getAlarmParam(AlarmParam &alarmParam);
 	static bool saveSuspectAlarm(const SuspectAlarm& suspectAlarm);
 	static bool getLocationId(const std::string& camerCode, std::string& locationId);
+	static bool getLocationCode(const std::string& camerCode, std::string& locationCode);
+	static bool getAreaCode(std::string& areaCode);
+	static bool getRegionCode(std::string& regionCode);
 };
 
 #endif // _DATA_LAYER_H_

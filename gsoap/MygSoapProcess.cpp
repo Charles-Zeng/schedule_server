@@ -7,6 +7,7 @@
 #include <locale.h>
 #include <stdlib.h>
 #include <logger/logger.h>
+#include <syscfg/sysConfig.h>
 
 MygSoapProcess::MygSoapProcess()
 {
@@ -48,9 +49,21 @@ bool MygSoapProcess::FaceServiceAPI(const std::string& ReqType, const std::strin
 	{
 		return false;
 	}
-	const char server[] = "http://192.168.0.156:6666/FACE?wsdl"; //服务器地址
+	static size_t i = 0;
+	if (i > 10000000)
+	{
+		i = 0;
+	} 
+	else
+	{
+		++i;
+	}
+
+	std::vector<std::string> serverUrls = CSysConfig::instance().m_processConfig.m_webSrvList;
+	int serverIndex = i % serverUrls.size();
+	//const char server[] = "http://192.168.0.156:6666/FACE?wsdl"; //服务器地址
 	BasicHttpBinding_USCOREIFACEProxy gsoapFace;                 //代理对象
-	gsoapFace.soap_endpoint = server;							 //连接服务器地址，绑定服务地址
+	gsoapFace.soap_endpoint = serverUrls[serverIndex].c_str();	 //连接服务器地址，绑定服务地址
 	_ns1__FaceService ReqObject;								 //请求对象
 	_ns1__FaceServiceResponse RepObject;						 //返回对象
 	std::wstring strType, strJson;

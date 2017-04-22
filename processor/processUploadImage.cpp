@@ -32,7 +32,16 @@ void ProcessUploadImage::process( const HttpRequest& req, HttpResponse& resp )
 
 	//save image
 	std::string strPath, strFileName;
-	getImageFilePath(strPath, strFileName);
+	if (!getImageFilePath(imageInfo.camerId, strPath, strFileName))
+	{
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "uploadImage:生成图片路径失败:%s", imageInfo.camerId.c_str());
+		respJson["code"] = 1;
+		respJson["message"] = "generate file path failed";
+		resp.bSuccess = true;
+		resp.httpBody = respJson.toStyledString().c_str();
+		return;
+	}
+
 	if (!saveImageFile(strPath, strFileName, imageInfo.imageStr))
 	{
 		CLogger::instance()->write_log(LOG_LEVEL_ERR, "uploadImage:保存本地图片失败:%s", (strPath+"/"+strFileName).c_str());
@@ -151,21 +160,38 @@ void ProcessUploadImage::process( const HttpRequest& req, HttpResponse& resp )
 	resp.httpBody = respJson.toStyledString().c_str();
 }
 
-void ProcessUploadImage::getImageFilePath(std::string & strPath, std::string & strFileName)
+bool ProcessUploadImage::getImageFilePath(const std::string& camerCode, std::string & strPath, std::string & strFileName)
 {
 	std::string strRegionCode;
 	std::string strAreaCode;
 	std::string strLocationCode;
 
+	if (!DataLayer::getRegionCode(strRegionCode))
+	{
+		return false;
+	}
+
+	if (!DataLayer::getAreaCode(strAreaCode))
+	{
+		return false;
+	}
+
+	if (!DataLayer::getLocationCode(camerCode, strLocationCode))
+	{
+		return false;
+	}
+
 	struct timeval tv;
 	gettimeofday(&tv, NULL);
 	uint64_t _misc = tv.tv_sec * 1000 + tv.tv_usec / 1000;
-	strFileName = std::string("ZDJKRYK_") + boost::lexical_cast<std::string>(_misc) + ".jpeg";
+	strFileName = camerCode + boost::lexical_cast<std::string>(_misc) + ".jpeg";
 
 	time_t _time = time(NULL);
 	tm* timeInfo = localtime(&_time);
 	strPath = CSysConfig::instance().m_storageConfig.m_rootPath + "/" + time2Str(timeInfo, 8) + "/"
 		+ strRegionCode + "/" + strAreaCode + "/" + strLocationCode;
+
+	return true;
 }
 
 bool ProcessUploadImage::saveImageFile(const std::string strPath, const std::string &strFileName,
