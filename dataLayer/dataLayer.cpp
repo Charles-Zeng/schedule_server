@@ -2,7 +2,6 @@
 #include <database/DBAdaptor.h>
 #include <common/commonFunction.h>
 #include <logger/logger.h>
-#include "../tool/uuid.h"
 
 #include <time.h>
 #include <stdio.h>
@@ -13,7 +12,7 @@ bool DataLayer::saveImage( const ImageInfo& imageInfo )
 {
 	bool ret = false;
 
-	std::string sqlStr = "INSERT INTO TB_MONITOR_PHOTO (ID, LOCATION_ID, MONITOR_TIME, PHOTO_PATH, CASE_PHOTO_ID) VALUES(:f1, :f2, to_date( :f3,'YYYY-MM-DD HH24:MI:SS'), :f4, :f5 )";
+	std::string sqlStr = "INSERT INTO TB_MONITOR_PHOTO (ID, LOCATION_ID, MONITOR_TIME, PHOTO_PATH) VALUES(:f1, :f2, to_date( :f3,'YYYY-MM-DD HH24:MI:SS'), :f4 )";
 
 	try
 	{
@@ -21,7 +20,7 @@ bool DataLayer::saveImage( const ImageInfo& imageInfo )
 
 		Statement *stmt = connObj.conn->createStatement();
 		stmt->setSQL(sqlStr);
-		stmt->setString(1, generate_uuid_string());
+		stmt->setString(1, imageInfo.sourceId);
 		stmt->setString(2, imageInfo.locationId);
 
 		time_t monitorTime = imageInfo.monitorTime;
@@ -30,7 +29,7 @@ bool DataLayer::saveImage( const ImageInfo& imageInfo )
 
 		stmt->setString(3, monitorTimeStr);
 		stmt->setString(4, imageInfo.photoPath);
-		stmt->setString(5, imageInfo.templateId);
+		//stmt->setString(5, imageInfo.templateId);
 
 		stmt->executeUpdate();
 		connObj.conn->commit();

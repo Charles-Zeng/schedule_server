@@ -13,6 +13,7 @@
 #include "../tool/base64/base64.h"
 #include <fstream>
 #include <boost/scoped_array.hpp>
+#include "../tool/uuid.h"
 
 
 void ProcessUploadImage::process( const HttpRequest& req, HttpResponse& resp )
@@ -53,8 +54,10 @@ void ProcessUploadImage::process( const HttpRequest& req, HttpResponse& resp )
 	}
 	CLogger::instance()->write_log(LOG_LEVEL_INFO, "uploadImage:保存本地图片成功:%s", (strPath + "/" + strFileName).c_str());
 	imageInfo.photoPath = strPath + "/" + strFileName;
+	imageInfo.sourceId = generate_uuid_string();
 
 	//1.add template
+	/*
 	TemplateInfo templateInfo;
 	time_t monitorTime = imageInfo.monitorTime;
 	tm* timeInfo = localtime(&monitorTime);
@@ -78,7 +81,7 @@ void ProcessUploadImage::process( const HttpRequest& req, HttpResponse& resp )
 	}
 		
 	imageInfo.templateId = boost::lexical_cast<std::string>(addTemplateResp.id);
-		
+	*/	
 	if (!DataLayer::getLocationId(imageInfo.camerId, imageInfo.locationId))
 	{
 		CLogger::instance()->write_log(LOG_LEVEL_ERR, "uploadImage:获取locationId失败");
@@ -105,7 +108,7 @@ void ProcessUploadImage::process( const HttpRequest& req, HttpResponse& resp )
 
 	//3.动态1:N
 	DynamicOneToNReq oneToNReq;
-	oneToNReq.sourceId = "souceId"; // how to get??
+	oneToNReq.sourceId = imageInfo.sourceId;
 	oneToNReq.pic = imageInfo.imageStr;
 
 	AlarmParam alarmParam;
@@ -184,7 +187,7 @@ bool ProcessUploadImage::getImageFilePath(const std::string& camerCode, std::str
 	struct timeval tv;
 	gettimeofday(&tv, NULL);
 	uint64_t _misc = tv.tv_sec * 1000 + tv.tv_usec / 1000;
-	strFileName = camerCode + boost::lexical_cast<std::string>(_misc) + ".jpeg";
+	strFileName = camerCode + "_" + boost::lexical_cast<std::string>(_misc) + ".jpeg";
 
 	time_t _time = time(NULL);
 	tm* timeInfo = localtime(&_time);

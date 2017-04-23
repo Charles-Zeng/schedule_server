@@ -32,6 +32,7 @@ struct ImageInfo
 	std::string imageStr;
 	std::string templateId;
 	std::string photoPath;
+	std::string sourceId; //uuid
 };
 
 struct TemplateInfo
