@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <string>
 #include <list>
+#include <vector>
 #include <json/json.h>
 
 enum Gender
@@ -62,6 +63,7 @@ struct AlarmParam
 {
 	int maxReturnNumber;
 	float alarmThreshold;
+	std::vector<std::string> groupIds;
 };
 
 struct SuspectAlarm

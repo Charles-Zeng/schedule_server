@@ -180,8 +180,8 @@ bool CJsonParser::parseOneToN(const std::string &strJson, OneToNInfo &oneToNInfo
         }
 
         oneToNInfo.picBase64 = value["pic"].asCString();
-        oneToNInfo.threshold = value["threshold"].asFloat();
-        oneToNInfo.count = value["count"].asInt();
+		oneToNInfo.threshold = boost::lexical_cast<float>(value["threshold"].asCString());
+        oneToNInfo.count = boost::lexical_cast<int>(value["count"].asCString());
         std::string strGroupIds = value["groupIds"].asCString();
         std::vector<std::string> vecGroupIds;
         boost::split(vecGroupIds, strGroupIds, boost::is_any_of(","));
@@ -189,7 +189,7 @@ bool CJsonParser::parseOneToN(const std::string &strJson, OneToNInfo &oneToNInfo
         {
             oneToNInfo.groupIds.push_back(atoi(strId.c_str()));
         }
-        oneToNInfo.gender = value["gender"].asInt();
+        oneToNInfo.gender = boost::lexical_cast<int>(value["gender"].asCString());
 
 		return true;
     }

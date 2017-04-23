@@ -2,6 +2,7 @@
 #include <database/DBAdaptor.h>
 #include <common/commonFunction.h>
 #include <logger/logger.h>
+#include <boost/lexical_cast.hpp>
 
 #include <time.h>
 #include <stdio.h>
@@ -12,7 +13,7 @@ bool DataLayer::saveImage( const ImageInfo& imageInfo )
 {
 	bool ret = false;
 
-	std::string sqlStr = "INSERT INTO TB_MONITOR_PHOTO (ID, LOCATION_ID, MONITOR_TIME, PHOTO_PATH) VALUES(:f1, :f2, to_date( :f3,'YYYY-MM-DD HH24:MI:SS'), :f4 )";
+	std::string sqlStr = "INSERT INTO TB_MONITOR_PHOTO (ID, LOCATION_ID, MONITOR_TIME, PHOTO_PATH, PHOTO_SEX) VALUES(:f1, :f2, to_date( :f3,'YYYY-MM-DD HH24:MI:SS'), :f4, :f5 )";
 
 	try
 	{
@@ -29,6 +30,7 @@ bool DataLayer::saveImage( const ImageInfo& imageInfo )
 
 		stmt->setString(3, monitorTimeStr);
 		stmt->setString(4, imageInfo.photoPath);
+		stmt->setString(5, boost::lexical_cast<std::string>(imageInfo.gender));
 		//stmt->setString(5, imageInfo.templateId);
 
 		stmt->executeUpdate();
@@ -44,7 +46,7 @@ bool DataLayer::saveImage( const ImageInfo& imageInfo )
 	
 	return ret;
 }
-
+/*
 bool DataLayer::getOneToNGroupIds(std::string &groupIds)
 {
 	bool ret = false;
@@ -76,11 +78,11 @@ bool DataLayer::getOneToNGroupIds(std::string &groupIds)
 
 	return ret;
 }
-
+*/
 bool DataLayer::getAlarmParam(AlarmParam &alarmParam)
 {
 	bool ret = false;
-	std::string sqlStr = "SELECT ALARM_THRESHOLD, MAX_RET_NUMBERS FROM TB_ALARM_PARAM";
+	std::string sqlStr = "SELECT ALARM_THRESHOLD, MAX_RET_NUMBERS, CASE_LIBRARY_ID FROM V_PARAM_LIBRARY";
 
 	try
 	{
@@ -92,9 +94,14 @@ bool DataLayer::getAlarmParam(AlarmParam &alarmParam)
 		ResultSet *rs = stmt->executeQuery();
 
 		while (rs->next())
-		{
+		{			
 			alarmParam.alarmThreshold = rs->getFloat(1);
 			alarmParam.maxReturnNumber = rs->getInt(2);
+			std::string groupId = rs->getString(3);
+			if (!groupId.empty())
+			{
+				alarmParam.groupIds.push_back(groupId);
+			}			
 		}
 
 		stmt->closeResultSet(rs);
@@ -183,7 +190,7 @@ bool DataLayer::getLocationId(const std::string& camerCode, std::string& locatio
 
 	return ret;
 }
-
+/*
 bool DataLayer::getLocationCode( const std::string& camerCode, std::string& locationCode )
 {
 	bool ret = false;
@@ -268,6 +275,110 @@ bool DataLayer::getRegionCode( std::string& regionCode )
 		while (rs->next())
 		{
 			regionCode = rs->getString(1);
+		}
+
+		stmt->closeResultSet(rs);
+		connObj.conn->terminateStatement(stmt);
+
+		ret = true;
+	}
+	catch (exception &e)
+	{
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "%s:%d, 执行SQL出错: %s", __FILE__, __LINE__, e.what());
+	}
+
+	return ret;
+}
+*/
+bool DataLayer::getFaceId(const std::string& templateId, std::string& faceId)
+{
+	bool ret = false;
+	std::string sqlStr = "SELECT ID FROM TB_FACE_PHOTO where CASE_PHOTO_ID = :f1";
+
+	try
+	{
+		ConnectionObj connObj;
+
+		Statement *stmt = connObj.conn->createStatement();
+		stmt->setSQL(sqlStr);
+		stmt->setString(1, templateId);
+
+		ResultSet *rs = stmt->executeQuery();
+
+		while (rs->next())
+		{
+			faceId = rs->getString(1);
+		}
+
+		stmt->closeResultSet(rs);
+		connObj.conn->terminateStatement(stmt);
+
+		ret = true;
+	}
+	catch (exception &e)
+	{
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "%s:%d, 执行SQL出错: %s", __FILE__, __LINE__, e.what());
+	}
+
+	return ret;
+}
+
+bool DataLayer::getAlarmAddress(const std::string& monitorFaceId, std::string& alarmAddress)
+{
+	bool ret = false;
+	std::string sqlStr = "SELECT AREA_DESCRIBE, LOCATION_NAME FROM V_MONITOR_PHOTO where ID = :f1";
+
+	try
+	{
+		ConnectionObj connObj;
+
+		Statement *stmt = connObj.conn->createStatement();
+		stmt->setSQL(sqlStr);
+		stmt->setString(1, monitorFaceId);
+
+		ResultSet *rs = stmt->executeQuery();
+
+		while (rs->next())
+		{
+			std::string areaDescribe = rs->getString(1);
+			std::string locationName = rs->getString(2);
+			alarmAddress = areaDescribe + locationName;
+		}
+
+		stmt->closeResultSet(rs);
+		connObj.conn->terminateStatement(stmt);
+
+		ret = true;
+	}
+	catch (exception &e)
+	{
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "%s:%d, 执行SQL出错: %s", __FILE__, __LINE__, e.what());
+	}
+
+	return ret;
+}
+
+bool DataLayer::getImageFilePathInfo(const std::string& camerCode, std::string& regionCode, std::string& areaCode, std::string& locationCode)
+{
+	bool ret = false;
+	std::string sqlStr = "SELECT SRI3_REGION_CODE, AREA_CODE, LOCATION_CODE FROM V_CAMERA_INFO  where CAMERA_CODE = :f1";
+
+	try
+	{
+		ConnectionObj connObj;
+
+		Statement *stmt = connObj.conn->createStatement();
+		stmt->setSQL(sqlStr);
+
+		stmt->setString(1, camerCode);
+
+		ResultSet *rs = stmt->executeQuery();
+
+		while (rs->next())
+		{
+			regionCode = rs->getString(1);
+			areaCode = rs->getString(2);
+			locationCode = rs->getString(3);
 		}
 
 		stmt->closeResultSet(rs);

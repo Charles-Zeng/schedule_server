@@ -71,6 +71,9 @@ bool MygSoapProcess::FaceServiceAPI(const std::string& ReqType, const std::strin
 	strJson = utf8ToUnicode(ReqJson);
 	ReqObject.type = (wchar_t*)strType.c_str();
 	ReqObject.json = (wchar_t*)strJson.c_str();
+
+	CLogger::instance()->write_log(LOG_LEVEL_DEBUG, "webservice: req json %s", ReqJson.c_str());
+
 	if (SOAP_OK == gsoapFace.FaceService(&ReqObject, RepObject))
 	{
 		strResult = unicodeToUtf8(RepObject.FaceServiceResult);
@@ -79,6 +82,7 @@ bool MygSoapProcess::FaceServiceAPI(const std::string& ReqType, const std::strin
 	}
 	else 
 	{
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "webservice: 调用建模服务器失败");
 		return false;
 	}
 }

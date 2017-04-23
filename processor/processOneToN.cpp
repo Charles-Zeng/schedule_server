@@ -17,7 +17,7 @@ void ProcessOneToN::process( const HttpRequest& req, HttpResponse& resp )
 		resp.httpBody = respJson.toStyledString().c_str();
 		return;
 	}
-
+	/*
 	GetFaceInfoResp getFaceInfoResp;
 	if (!TemplateServerProxy::getFaceInfo(oneToNInfo.picBase64, getFaceInfoResp))
 	{
@@ -28,7 +28,7 @@ void ProcessOneToN::process( const HttpRequest& req, HttpResponse& resp )
 		resp.httpBody = respJson.toStyledString().c_str();
 		return;
 	}
-
+	*/
 	OneToNResp oneToNResp;
 	if (!TemplateServerProxy::oneToN(oneToNInfo, oneToNResp))
 	{

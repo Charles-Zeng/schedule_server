@@ -78,11 +78,11 @@ std::string CJsonBuilder::buildOneToN( const OneToNInfo& oneToNInfo )
 
 	Json::Value value;
 
-	std::string genderStr = boost::lexical_cast<std::string>(oneToNInfo.gender);
+	//std::string genderStr = boost::lexical_cast<std::string>(oneToNInfo.gender);
 	std::string groupIdsStr = boost::algorithm::join(groupIdsStrList, ",");
 	value["threshold"] = oneToNInfo.threshold;
 	value["count"] = oneToNInfo.count;
-	value["gender"] = genderStr.c_str();
+	value["gender"] = oneToNInfo.gender;//genderStr.c_str();
 	value["groupIds"] = groupIdsStr.c_str();
 	value["pic"] = oneToNInfo.picBase64.c_str();
 

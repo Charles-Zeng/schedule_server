@@ -14,6 +14,7 @@
 #include <fstream>
 #include <boost/scoped_array.hpp>
 #include "../tool/uuid.h"
+#include <boost/algorithm/string.hpp>
 
 
 void ProcessUploadImage::process( const HttpRequest& req, HttpResponse& resp )
@@ -112,7 +113,7 @@ void ProcessUploadImage::process( const HttpRequest& req, HttpResponse& resp )
 	oneToNReq.pic = imageInfo.imageStr;
 
 	AlarmParam alarmParam;
-	if (!DataLayer::getOneToNGroupIds(oneToNReq.groupIds) || !DataLayer::getAlarmParam(alarmParam))
+	if (!DataLayer::getAlarmParam(alarmParam))
 	{
 		CLogger::instance()->write_log(LOG_LEVEL_ERR, "uploadImage:获取告警参数失败");
 		respJson["code"] = 1;
@@ -121,9 +122,20 @@ void ProcessUploadImage::process( const HttpRequest& req, HttpResponse& resp )
 		resp.httpBody = respJson.toStyledString().c_str();
 		return;
 	}
+
+	if (alarmParam.groupIds.empty())
+	{
+		CLogger::instance()->write_log(LOG_LEVEL_DEBUG, "uploadImage:未获取到告警参数");
+		respJson["code"] = HTTP_SUCCESS;
+		respJson["message"] = "success";
+		resp.bSuccess = true;
+		resp.httpBody = respJson.toStyledString().c_str();
+		return;
+	}
 	
 	oneToNReq.threshold = alarmParam.alarmThreshold;
 	oneToNReq.count = alarmParam.maxReturnNumber;
+	oneToNReq.groupIds = boost::algorithm::join(alarmParam.groupIds, ",");
 
 	DynamicOneToNResp oneToNResp;
 	if (!TemplateServerProxy::dynamicOneToN(oneToNReq, oneToNResp))
@@ -141,10 +153,21 @@ void ProcessUploadImage::process( const HttpRequest& req, HttpResponse& resp )
 	for (IT it = oneToNResp.listMatches.begin(); it != oneToNResp.listMatches.end(); ++it)
 	{
 		SuspectAlarm suspectAlarm;
-		suspectAlarm.faceId = "";
-		suspectAlarm.monitorId = "";
-		suspectAlarm.alarmTime = time(NULL);
-		suspectAlarm.alarmAddress = "";
+		suspectAlarm.monitorId = imageInfo.sourceId;
+
+		if (!DataLayer::getFaceId(boost::lexical_cast<std::string>(it->id), suspectAlarm.faceId))
+		{
+			CLogger::instance()->write_log(LOG_LEVEL_ERR, "uploadImage:获取faceId失败");
+			continue;
+		}
+
+		if (!DataLayer::getAlarmAddress(imageInfo.sourceId, suspectAlarm.alarmAddress))
+		{
+			CLogger::instance()->write_log(LOG_LEVEL_ERR, "uploadImage:获取alarmAddress失败");
+			continue;
+		}
+
+		suspectAlarm.alarmTime = imageInfo.monitorTime;
 		suspectAlarm.similarity = it->score;
 		suspectAlarm.suspectState = "1"; // 1：未处理 2：已处理
 		suspectAlarm.suspectType = "1"; // 1：布控自动告警 2：人工确认告警 3：人工比对告警
@@ -155,6 +178,8 @@ void ProcessUploadImage::process( const HttpRequest& req, HttpResponse& resp )
 			continue;
 		}
 		
+		CLogger::instance()->write_log(LOG_LEVEL_DEBUG, "uploadImage:告警信息入库成功monitorId=%s, faceId=%s, alarmAddress=%s",
+			suspectAlarm.monitorId.c_str(), suspectAlarm.faceId.c_str(), suspectAlarm.alarmAddress.c_str());
 	}
 
 	respJson["code"] = HTTP_SUCCESS;
@@ -169,17 +194,7 @@ bool ProcessUploadImage::getImageFilePath(const std::string& camerCode, std::str
 	std::string strAreaCode;
 	std::string strLocationCode;
 
-	if (!DataLayer::getRegionCode(strRegionCode))
-	{
-		return false;
-	}
-
-	if (!DataLayer::getAreaCode(strAreaCode))
-	{
-		return false;
-	}
-
-	if (!DataLayer::getLocationCode(camerCode, strLocationCode))
+	if (!DataLayer::getImageFilePathInfo(camerCode, strRegionCode, strAreaCode, strLocationCode))
 	{
 		return false;
 	}

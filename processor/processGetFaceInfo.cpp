@@ -12,7 +12,7 @@ void ProcessGetFaceInfo::process(const HttpRequest& req, HttpResponse& resp)
 	GetFaceInfoReq getfaceinfo;
 	if (!CJsonParser::parseGetFaceInfo(req.httpBody, getfaceinfo))
 	{
-		CLogger::instance()->write_log(LOG_LEVEL_ERR, "oneToN: 解析包体json失败. body: %s", req.httpBody.c_str());
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "getFaceInfo: 解析包体json失败. body: %s", req.httpBody.c_str());
 		respJson["code"] = 1;
 		respJson["message"] = "invalid body json";
 		resp.bSuccess = true;
@@ -23,7 +23,7 @@ void ProcessGetFaceInfo::process(const HttpRequest& req, HttpResponse& resp)
 	GetFaceInfoResp getFaceInfoResp;
 	if (!TemplateServerProxy::getFaceInfo(getfaceinfo.picBase64, getFaceInfoResp))
 	{
-		CLogger::instance()->write_log(LOG_LEVEL_ERR, "oneToN: 获取人脸信息失败: %s", getFaceInfoResp.errorMsg.c_str());
+		CLogger::instance()->write_log(LOG_LEVEL_ERR, "getFaceInfo: 获取人脸信息失败: %s", getFaceInfoResp.errorMsg.c_str());
 		respJson["code"] = 1;
 		respJson["message"] = getFaceInfoResp.errorMsg.c_str();
 		resp.bSuccess = true;
