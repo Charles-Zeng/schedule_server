@@ -165,36 +165,33 @@ bool CJsonParser::parseOneToOne(const std::string &strJson, OneToOneInfo &oneToO
     return false;
 }
 
-bool CJsonParser::parseOneToN(const std::string &strJson, OneToNInfo &oneToNInfo)
+bool CJsonParser::parseOneToN(const std::string& strJson, OneToNInfo& oneToNInfo)
 {
-    Json::Reader reader;
-    Json::Value value;
-
-    if (reader.parse(strJson, value))
-    {
-        if(value["pic"] == Json::Value::null || value["threshold"] == Json::Value::null
-                || value["count"] == Json::Value::null || value["groupIds"] == Json::Value::null
-                || value["gender"] == Json::Value::null)
-        {
-            return false;
-        }
-
-        oneToNInfo.picBase64 = value["pic"].asCString();
+	Json::Reader reader;
+	Json::Value value;
+	if (reader.parse(strJson, value))
+	{
+		if (value["pic"] == Json::Value::null || value["threshold"] == Json::Value::null
+			|| value["count"] == Json::Value::null || value["groupIds"] == Json::Value::null)
+		{
+			return false;
+		}
+		oneToNInfo.picBase64 = value["pic"].asCString();
 		oneToNInfo.threshold = boost::lexical_cast<float>(value["threshold"].asCString());
-        oneToNInfo.count = boost::lexical_cast<int>(value["count"].asCString());
-        std::string strGroupIds = value["groupIds"].asCString();
-        std::vector<std::string> vecGroupIds;
-        boost::split(vecGroupIds, strGroupIds, boost::is_any_of(","));
-        BOOST_FOREACH(const std::string &strId, vecGroupIds)
-        {
-            oneToNInfo.groupIds.push_back(atoi(strId.c_str()));
-        }
-        oneToNInfo.gender = boost::lexical_cast<int>(value["gender"].asCString());
+		oneToNInfo.count = boost::lexical_cast<int>(value["count"].asCString());
+		std::string strGroupIds = value["groupIds"].asCString();
+		std::vector<std::string> vecGroupIds;
+		boost::split(vecGroupIds, strGroupIds, boost::is_any_of(","));
+		BOOST_FOREACH(const std::string &strId, vecGroupIds)
+		{
+			oneToNInfo.groupIds.push_back(strId);
+		}
+		oneToNInfo.gender = value["gender"].asCString();
 
 		return true;
-    }
+	}
 
-    return false;
+	return false;
 }
 
 bool CJsonParser::parseAddGroupResp( const std::string& strJson, AddGroupResp& addGroupResp )
@@ -309,6 +306,7 @@ bool CJsonParser::parseDynamicOneToNResp( const std::string& strJson, DynamicOne
 
 	if (reader.parse(strJson, value))
 	{
+		
 		if(value["code"] == Json::Value::null
 			|| value["listMatches"] == Json::Value::null)
 		{
@@ -316,7 +314,7 @@ bool CJsonParser::parseDynamicOneToNResp( const std::string& strJson, DynamicOne
 		}
 
 		dynamicOneToNResp.code = value["code"].asInt();
-		
+		dynamicOneToNResp.sourceID = value["sourceID"].asCString();
 		if (value["errorMessage"] != Json::Value::null)
 		{
 			dynamicOneToNResp.errorMsg = value["errorMessage"].asCString();
@@ -333,7 +331,7 @@ bool CJsonParser::parseDynamicOneToNResp( const std::string& strJson, DynamicOne
 			Matche match;
 			match.id = matchArray[i]["id"].asInt();
 			match.score = matchArray[i]["score"].asFloat();
-			match.sourceId = matchArray[i]["sourceID"].asCString();
+			match.sourceId = dynamicOneToNResp.sourceID;
 			dynamicOneToNResp.listMatches.push_back(match);
 		}
 

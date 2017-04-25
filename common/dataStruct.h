@@ -55,8 +55,8 @@ struct OneToNInfo
     std::string picBase64;
     float threshold;
     int32_t count;
-    std::list<int32_t> groupIds;
-    int32_t gender;
+    std::list<std::string> groupIds;
+    std::string gender;
 };
 
 struct AlarmParam
@@ -125,6 +125,8 @@ struct Matche
 struct DynamicOneToNResp
 {
 	int code;
+	//20170425 建模返回json为code后面，sourceID
+	std::string sourceID;
 	std::string errorMsg;
 	std::list<Matche> listMatches;
 };

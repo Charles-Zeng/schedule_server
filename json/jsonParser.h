@@ -17,7 +17,6 @@ public:
     static bool parseDelTemplate(const std::string& strJson, std::string& templateId);
     static bool parseOneToOne(const std::string& strJson, OneToOneInfo& oneToOneInfo);
     static bool parseOneToN(const std::string& strJson, OneToNInfo& oneToNInfo);
-	//20170420 add liyogn 添加获取人脸信息接口
 	static bool parseGetFaceInfo(const std::string& strJson, GetFaceInfoReq& getfaceinfo);
 
 	//web service 响应解析

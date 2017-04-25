@@ -70,10 +70,10 @@ std::string CJsonBuilder::buildOneToOne( const OneToOneInfo& oneToOneInfo )
 std::string CJsonBuilder::buildOneToN( const OneToNInfo& oneToNInfo )
 {
 	std::list<std::string> groupIdsStrList;
-	typedef std::list<int32_t>::const_iterator IT;
+	typedef std::list<std::string>::const_iterator IT;
 	for (IT it = oneToNInfo.groupIds.begin(); it != oneToNInfo.groupIds.end(); ++it)
 	{
-		groupIdsStrList.push_back(boost::lexical_cast<std::string>(*it));
+		groupIdsStrList.push_back(*it);
 	}
 
 	Json::Value value;
@@ -82,7 +82,7 @@ std::string CJsonBuilder::buildOneToN( const OneToNInfo& oneToNInfo )
 	std::string groupIdsStr = boost::algorithm::join(groupIdsStrList, ",");
 	value["threshold"] = oneToNInfo.threshold;
 	value["count"] = oneToNInfo.count;
-	value["gender"] = oneToNInfo.gender;//genderStr.c_str();
+	value["gender"] = oneToNInfo.gender.c_str();//genderStr.c_str();
 	value["groupIds"] = groupIdsStr.c_str();
 	value["pic"] = oneToNInfo.picBase64.c_str();
 
@@ -94,8 +94,8 @@ std::string CJsonBuilder::buildDynamicOneToN( const DynamicOneToNReq& dynamicOne
 	Json::Value value;
 
 	value["sourceID"] = dynamicOneToNReq.sourceId.c_str();
-	value["threshold"] = dynamicOneToNReq.threshold;
-	value["count"] = dynamicOneToNReq.count;
+	value["threshold"] = boost::lexical_cast<float>(dynamicOneToNReq.threshold);
+	value["count"] = boost::lexical_cast<int>(dynamicOneToNReq.count);
 	value["groupIds"] = dynamicOneToNReq.groupIds.c_str();
 	value["pic"] = dynamicOneToNReq.pic.c_str();
 
