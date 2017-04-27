@@ -89,7 +89,7 @@ std::string CJsonBuilder::buildOneToN( const OneToNInfo& oneToNInfo )
 	return value.toStyledString().c_str();
 }
 
-std::string CJsonBuilder::buildDynamicOneToN( const DynamicOneToNReq& dynamicOneToNReq )
+std::string CJsonBuilder::buildDynamicOneToN(const DynamicOneToNReq& dynamicOneToNReq )
 {
 	Json::Value value;
 

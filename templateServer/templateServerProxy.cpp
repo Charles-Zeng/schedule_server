@@ -32,7 +32,7 @@ bool TemplateServerProxy::addGroupId( const GroupIdInfo& req, AddGroupResp& resp
 	if (!CJsonParser::parseAddGroupResp(respJson, resp))
 	{
 		resp.code = 0;
-		resp.errorMsg = "parse web service response failed";
+		resp.errorMsg = resp.errorMsg;
 		return false;
 	}
 
@@ -60,7 +60,7 @@ bool TemplateServerProxy::delGroupId( int64_t groupId, DelGroupResp& resp )
 	if (!CJsonParser::parseDelGroupResp(respJson, resp))
 	{
 		resp.code = 0;
-		resp.errorMsg = "parse web service response failed";
+		resp.errorMsg = resp.errorMsg;
 		return false;
 	}
 
@@ -88,7 +88,7 @@ bool TemplateServerProxy::addTemplate( const TemplateInfo& templateInfo, AddTemp
 	if (!CJsonParser::parseAddTemplateResp(respJson, resp))
 	{
 		resp.code = 0;
-		resp.errorMsg = "parse web service response failed";
+		resp.errorMsg = resp.errorMsg;
 		return false;
 	}
 
@@ -116,7 +116,7 @@ bool TemplateServerProxy::delTemplate(std::string id, DelTemplateResp& resp )
 	if (!CJsonParser::parseDelTemplateResp(respJson, resp))
 	{
 		resp.code = 0;
-		resp.errorMsg = "parse web service response failed";
+		resp.errorMsg = resp.errorMsg;
 		return false;
 	}
 
@@ -128,7 +128,7 @@ bool TemplateServerProxy::delTemplate(std::string id, DelTemplateResp& resp )
 	return true;
 }
 
-bool TemplateServerProxy::dynamicOneToN( const DynamicOneToNReq& req, DynamicOneToNResp& resp )
+bool TemplateServerProxy::dynamicOneToN(const DynamicOneToNReq& req, DynamicOneToNResp& resp )
 {
 	std::string reqJson = CJsonBuilder::buildDynamicOneToN(req);
 
@@ -144,7 +144,7 @@ bool TemplateServerProxy::dynamicOneToN( const DynamicOneToNReq& req, DynamicOne
 	if (!CJsonParser::parseDynamicOneToNResp(respJson, resp))
 	{
 		resp.code = 0;
-		resp.errorMsg = "parse web service response failed";
+		resp.errorMsg = resp.errorMsg;
 		return false;
 	}
 
@@ -170,7 +170,7 @@ bool TemplateServerProxy::getGroupIdInfos( GetGroupIdResp& resp )
 	if (!CJsonParser::parseGetGroupIdResp(respJson, resp))
 	{
 		resp.code = 0;
-		resp.errorMsg = "parse web service response failed";
+		resp.errorMsg = resp.errorMsg;
 		return false;
 	}
 
@@ -198,7 +198,7 @@ bool TemplateServerProxy::getFaceInfo( const std::string pic, GetFaceInfoResp& r
 	if (!CJsonParser::parseGetFaceInfoResp(respJson, resp))
 	{
 		resp.code = 0;
-		resp.errorMsg = "parse web service response failed";
+		resp.errorMsg = resp.errorMsg;
 		return false;
 	}
 
@@ -226,7 +226,7 @@ bool TemplateServerProxy::oneToOne( const OneToOneInfo& req, OneToOneResp& resp 
 	if (!CJsonParser::parseOneToOneResp(respJson, resp))
 	{
 		resp.code = 0;
-		resp.errorMsg = "parse web service response failed";
+		resp.errorMsg = resp.errorMsg;
 		return false;
 	}
 
@@ -254,7 +254,7 @@ bool TemplateServerProxy::oneToN( const OneToNInfo& req, OneToNResp& resp )
 	if (!CJsonParser::parseOneToNResp(respJson, resp))
 	{
 		resp.code = 0;
-		resp.errorMsg = "parse web service response failed";
+		resp.errorMsg = resp.errorMsg;
 		return false;
 	}
 

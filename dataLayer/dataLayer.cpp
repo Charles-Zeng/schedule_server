@@ -30,7 +30,7 @@ bool DataLayer::saveImage( const ImageInfo& imageInfo )
 
 		stmt->setString(3, monitorTimeStr);
 		stmt->setString(4, imageInfo.photoPath);
-		stmt->setString(5, boost::lexical_cast<std::string>(imageInfo.gender));
+		stmt->setString(5, imageInfo.gender);
 		//stmt->setString(5, imageInfo.templateId);
 
 		stmt->executeUpdate();
@@ -82,7 +82,7 @@ bool DataLayer::getOneToNGroupIds(std::string &groupIds)
 bool DataLayer::getAlarmParam(AlarmParam &alarmParam)
 {
 	bool ret = false;
-	std::string sqlStr = "SELECT ALARM_THRESHOLD, MAX_RET_NUMBERS, CASE_LIBRARY_ID FROM V_PARAM_LIBRARY";
+	std::string sqlStr = "SELECT ALARM_THRESHOLD, CONTRAST_THRESHOLD, MAX_RET_NUMBERS, CASE_LIBRARY_ID FROM V_PARAM_LIBRARY";
 
 	try
 	{
@@ -96,8 +96,9 @@ bool DataLayer::getAlarmParam(AlarmParam &alarmParam)
 		while (rs->next())
 		{			
 			alarmParam.alarmThreshold = rs->getFloat(1);
-			alarmParam.maxReturnNumber = rs->getInt(2);
-			std::string groupId = rs->getString(3);
+			alarmParam.contrastthreshold = rs->getFloat(2);
+			alarmParam.maxReturnNumber = rs->getInt(3);
+			std::string groupId = rs->getString(4);
 			if (!groupId.empty())
 			{
 				alarmParam.groupIds.push_back(groupId);
@@ -120,8 +121,8 @@ bool DataLayer::getAlarmParam(AlarmParam &alarmParam)
 bool DataLayer::saveSuspectAlarm( const SuspectAlarm& suspectAlarm )
 {
 	bool ret = false;
-	std::string sqlStr = "INSERT INTO TB_SUSPECT_ALARM (FACE_ID, MONITOR_ID, ALARM_TIME, ALARM_ADDRESS, SIMILARITY, SUSPECT_STATE, SUSPECT_TYPE ) \
-						 VALUES( :f1, :f2, to_date( :f3,'YYYY-MM-DD HH24:MI:SS'), :f4, :f5, :f6, f7 )";
+	std::string sqlStr = "INSERT INTO TB_SUSPECT_ALARM (ID, FACE_ID, MONITOR_ID, ALARM_TIME, ALARM_ADDRESS, SIMILARITY, SUSPECT_STATE, SUSPECT_TYPE ) \
+						 VALUES( :f1, :f2, :f3, to_date( :f4,'YYYY-MM-DD HH24:MI:SS'), :f5, :f6, :f7, :f8)";
 
 	try
 	{
@@ -130,18 +131,19 @@ bool DataLayer::saveSuspectAlarm( const SuspectAlarm& suspectAlarm )
 		Statement *stmt = connObj.conn->createStatement();
 		stmt->setSQL(sqlStr);
 
-		stmt->setString(1, suspectAlarm.faceId);
-		stmt->setString(2, suspectAlarm.monitorId);
+		stmt->setString(1, suspectAlarm.ID);
+		stmt->setString(2, suspectAlarm.faceId);
+		stmt->setString(3, suspectAlarm.monitorId);
 
 		time_t alarmTime = suspectAlarm.alarmTime;
 		tm* timeInfo = localtime(&alarmTime);
 		std::string alarmTimeStr = time2Str(timeInfo, 1);
-		stmt->setString(3, alarmTimeStr);
+		stmt->setString(4, alarmTimeStr);
 
-		stmt->setString(4, suspectAlarm.alarmAddress);
-		stmt->setFloat(5, suspectAlarm.similarity);
-		stmt->setString(6, "1"); //1：未处理 2：已处理
-		stmt->setString(7, "1"); //1：布控自动告警 2：人工确认告警 3：人工比对告警
+		stmt->setString(5, suspectAlarm.alarmAddress);
+		stmt->setFloat(6, suspectAlarm.similarity);
+		stmt->setString(7, "1"); //1：未处理 2：已处理
+		stmt->setString(8, "1"); //1：布控自动告警 2：人工确认告警 3：人工比对告警
 
 		stmt->executeUpdate();
 

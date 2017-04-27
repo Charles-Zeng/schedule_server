@@ -26,10 +26,9 @@ const int GSOAP_FAILED = 0;
 struct ImageInfo
 {
 	std::string camerId;
-	std::string location;
 	std::string locationId; // read from db
 	int64_t monitorTime;
-	int gender;
+	std::string gender;
 	std::string imageStr;
 	std::string templateId;
 	std::string photoPath;
@@ -62,12 +61,14 @@ struct OneToNInfo
 struct AlarmParam
 {
 	int maxReturnNumber;
-	float alarmThreshold;
+	float alarmThreshold; //告警阈值
+	float contrastthreshold; //比对阈值
 	std::vector<std::string> groupIds;
 };
 
 struct SuspectAlarm
 {
+	std::string ID;    //add liyong 添加告警表ID值
 	std::string faceId;
 	std::string monitorId;
 	int64_t alarmTime;

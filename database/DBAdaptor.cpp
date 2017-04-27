@@ -58,7 +58,7 @@ bool DBAdaptor::init( const std::string& username,
 
 	try
 	{
-		m_env = Environment::createEnvironment(Environment::THREADED_MUTEXED);
+		m_env = Environment::createEnvironment("ZHS16GBK", "ZHS16GBK", Environment::THREADED_MUTEXED);
 
 		m_connPool = m_env->createStatelessConnectionPool(
 								m_userName,

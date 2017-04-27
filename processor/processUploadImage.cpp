@@ -16,6 +16,8 @@
 #include "../tool/uuid.h"
 #include <boost/algorithm/string.hpp>
 
+static const std::string strAlarmThreshold = "ALARM_THRESHOLD";        //告警阈值类型
+static const std::string strContrastThreshold = "CONTRAST_THRESHOLD";  //比对阈值类型
 
 void ProcessUploadImage::process( const HttpRequest& req, HttpResponse& resp )
 {
@@ -83,7 +85,8 @@ void ProcessUploadImage::process( const HttpRequest& req, HttpResponse& resp )
 		
 	imageInfo.templateId = boost::lexical_cast<std::string>(addTemplateResp.id);
 	*/	
-	if (!DataLayer::getLocationId(imageInfo.camerId, imageInfo.locationId))
+	if (!DataLayer::getLocationId(imageInfo.camerId, imageInfo.locationId)
+		|| imageInfo.locationId.empty())
 	{
 		CLogger::instance()->write_log(LOG_LEVEL_ERR, "uploadImage:获取locationId失败");
 		respJson["code"] = 1;
@@ -132,60 +135,129 @@ void ProcessUploadImage::process( const HttpRequest& req, HttpResponse& resp )
 		resp.httpBody = respJson.toStyledString().c_str();
 		return;
 	}
-	
-	oneToNReq.threshold = alarmParam.alarmThreshold;
 	oneToNReq.count = alarmParam.maxReturnNumber;
 	oneToNReq.groupIds = boost::algorithm::join(alarmParam.groupIds, ",");
-
-	DynamicOneToNResp oneToNResp;
-	if (!TemplateServerProxy::dynamicOneToN(oneToNReq, oneToNResp))
+	std::string strType = "ALARM_THRESHOLD";
+	if (strType == strAlarmThreshold)
 	{
-		CLogger::instance()->write_log(LOG_LEVEL_ERR, "uploadImage:调用动态1:N失败:%s", oneToNResp.errorMsg.c_str());
-		respJson["code"] = 1;
-		respJson["message"] = oneToNResp.errorMsg.c_str();
-		resp.bSuccess = true;
-		resp.httpBody = respJson.toStyledString().c_str();
-		return;
-	}
+		oneToNReq.threshold = alarmParam.alarmThreshold;      //告警阈值
+		strType = "CONTRAST_THRESHOLD";
+		DynamicOneToNResp oneToNResp;
+		if (!TemplateServerProxy::dynamicOneToN(oneToNReq, oneToNResp))
+		{
+			CLogger::instance()->write_log(LOG_LEVEL_ERR, "uploadImage:调用动态1:N失败:%s", oneToNResp.errorMsg.c_str());
+			respJson["code"] = 1;
+			respJson["message"] = oneToNResp.errorMsg.c_str();
+			resp.bSuccess = true;
+			resp.httpBody = respJson.toStyledString().c_str();
+		}
+		else
+		{
+			CLogger::instance()->write_log(LOG_LEVEL_INFO, "uploadImage: ALARM_THRESHOLD, req sourceID=%s, resp sourceID=%s", 
+				oneToNReq.sourceId.c_str(), oneToNResp.sourceID.c_str());
+			//比对阈值，然后入告警库
+			//4.入告警库
+			typedef list<Matche>::iterator IT;
+			for (IT it = oneToNResp.listMatches.begin(); it != oneToNResp.listMatches.end(); ++it)
+			{
+				if (it->score > oneToNReq.threshold)
+				{
+					SuspectAlarm suspectAlarm;
+					suspectAlarm.monitorId = imageInfo.sourceId;
 
-	//4.入告警库
-	typedef list<Matche>::iterator IT;
-	for (IT it = oneToNResp.listMatches.begin(); it != oneToNResp.listMatches.end(); ++it)
+					if (!DataLayer::getFaceId(boost::lexical_cast<std::string>(it->id), suspectAlarm.faceId))
+					{
+						CLogger::instance()->write_log(LOG_LEVEL_ERR, "uploadImage:获取faceId失败");
+						continue;
+					}
+
+					if (!DataLayer::getAlarmAddress(imageInfo.sourceId, suspectAlarm.alarmAddress))
+					{
+						CLogger::instance()->write_log(LOG_LEVEL_ERR, "uploadImage:获取alarmAddress失败");
+						continue;
+					}
+					suspectAlarm.ID = generate_uuid_string();      //告警表ID自动生成uuid
+					suspectAlarm.alarmTime = imageInfo.monitorTime;
+					suspectAlarm.similarity = it->score;
+					suspectAlarm.suspectState = "1"; // 1：未处理 2：已处理
+					suspectAlarm.suspectType = "1"; // 1：布控自动告警 2：人工确认告警 3：人工比对告警
+
+					if (!DataLayer::saveSuspectAlarm(suspectAlarm))
+					{
+						CLogger::instance()->write_log(LOG_LEVEL_ERR, "uploadImage:告警信息入库失败");
+						continue;
+					}
+
+					CLogger::instance()->write_log(LOG_LEVEL_DEBUG, "uploadImage:告警信息入库成功monitorId=%s, faceId=%s, alarmAddress=%s",
+						suspectAlarm.monitorId.c_str(), suspectAlarm.faceId.c_str(), suspectAlarm.alarmAddress.c_str());
+					respJson["code"] = HTTP_SUCCESS;
+					respJson["message"] = "success";
+					resp.bSuccess = true;
+					resp.httpBody = respJson.toStyledString().c_str();
+				}
+			}
+		}	
+	}
+	if(strType == strContrastThreshold)
 	{
-		SuspectAlarm suspectAlarm;
-		suspectAlarm.monitorId = imageInfo.sourceId;
-
-		if (!DataLayer::getFaceId(boost::lexical_cast<std::string>(it->id), suspectAlarm.faceId))
+		oneToNReq.threshold = alarmParam.contrastthreshold;   //比对阈值
+		//strType = "CONTRAST_THRESHOLD";
+		DynamicOneToNResp oneToNResp;
+		if (!TemplateServerProxy::dynamicOneToN(oneToNReq, oneToNResp))
 		{
-			CLogger::instance()->write_log(LOG_LEVEL_ERR, "uploadImage:获取faceId失败");
-			continue;
+			CLogger::instance()->write_log(LOG_LEVEL_ERR, "uploadImage:调用动态1:N失败:%s", oneToNResp.errorMsg.c_str());
+			respJson["code"] = 1;
+			respJson["message"] = oneToNResp.errorMsg.c_str();
+			resp.bSuccess = true;
+			resp.httpBody = respJson.toStyledString().c_str();
 		}
-
-		if (!DataLayer::getAlarmAddress(imageInfo.sourceId, suspectAlarm.alarmAddress))
+		else
 		{
-			CLogger::instance()->write_log(LOG_LEVEL_ERR, "uploadImage:获取alarmAddress失败");
-			continue;
-		}
+			CLogger::instance()->write_log(LOG_LEVEL_INFO, "uploadImage: CONTRAST_THRESHOLD, req sourceID=%s, resp sourceID=%s",
+				oneToNReq.sourceId.c_str(), oneToNResp.sourceID.c_str());
+			//比对阈值，然后入告警库
+			//4.入告警库
+			typedef list<Matche>::iterator IT;
+			for (IT it = oneToNResp.listMatches.begin(); it != oneToNResp.listMatches.end(); ++it)
+			{
+				if (it->score > oneToNReq.threshold)
+				{
+					SuspectAlarm suspectAlarm;
+					suspectAlarm.monitorId = imageInfo.sourceId;
 
-		suspectAlarm.alarmTime = imageInfo.monitorTime;
-		suspectAlarm.similarity = it->score;
-		suspectAlarm.suspectState = "1"; // 1：未处理 2：已处理
-		suspectAlarm.suspectType = "1"; // 1：布控自动告警 2：人工确认告警 3：人工比对告警
+					if (!DataLayer::getFaceId(boost::lexical_cast<std::string>(it->id), suspectAlarm.faceId))
+					{
+						CLogger::instance()->write_log(LOG_LEVEL_ERR, "uploadImage:获取faceId失败");
+						continue;
+					}
 
-		if (!DataLayer::saveSuspectAlarm(suspectAlarm))
-		{
-			CLogger::instance()->write_log(LOG_LEVEL_ERR, "uploadImage:告警信息入库失败");
-			continue;
-		}
-		
-		CLogger::instance()->write_log(LOG_LEVEL_DEBUG, "uploadImage:告警信息入库成功monitorId=%s, faceId=%s, alarmAddress=%s",
-			suspectAlarm.monitorId.c_str(), suspectAlarm.faceId.c_str(), suspectAlarm.alarmAddress.c_str());
+					if (!DataLayer::getAlarmAddress(imageInfo.sourceId, suspectAlarm.alarmAddress))
+					{
+						CLogger::instance()->write_log(LOG_LEVEL_ERR, "uploadImage:获取alarmAddress失败");
+						continue;
+					}
+					suspectAlarm.ID = generate_uuid_string();      //告警表ID自动生成uuid
+					suspectAlarm.alarmTime = imageInfo.monitorTime;
+					suspectAlarm.similarity = it->score;
+					suspectAlarm.suspectState = "1"; // 1：未处理 2：已处理
+					suspectAlarm.suspectType = "1"; // 1：布控自动告警 2：人工确认告警 3：人工比对告警
+
+					if (!DataLayer::saveSuspectAlarm(suspectAlarm))
+					{
+						CLogger::instance()->write_log(LOG_LEVEL_ERR, "uploadImage:告警信息入库失败");
+						continue;
+					}
+
+					CLogger::instance()->write_log(LOG_LEVEL_DEBUG, "uploadImage:告警信息入库成功monitorId=%s, faceId=%s, alarmAddress=%s",
+						suspectAlarm.monitorId.c_str(), suspectAlarm.faceId.c_str(), suspectAlarm.alarmAddress.c_str());
+					respJson["code"] = HTTP_SUCCESS;
+					respJson["message"] = "success";
+					resp.bSuccess = true;
+					resp.httpBody = respJson.toStyledString().c_str();
+				}
+			}
+		}	
 	}
-
-	respJson["code"] = HTTP_SUCCESS;
-	respJson["message"] = "success";
-	resp.bSuccess = true;
-	resp.httpBody = respJson.toStyledString().c_str();
 }
 
 bool ProcessUploadImage::getImageFilePath(const std::string& camerCode, std::string & strPath, std::string & strFileName)
