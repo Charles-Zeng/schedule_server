@@ -108,7 +108,7 @@ struct HttpResponse
 //dynamic 1:N request
 struct DynamicOneToNReq
 {
-	std::string sourceId;
+	//std::string sourceId;
 	std::string  pic;
 	float threshold;
 	int count;
@@ -127,7 +127,7 @@ struct DynamicOneToNResp
 {
 	int code;
 	//20170425 建模返回json为code后面，sourceID
-	std::string sourceID;
+	//std::string sourceID;
 	std::string errorMsg;
 	std::list<Matche> listMatches;
 };

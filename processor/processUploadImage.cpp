@@ -35,8 +35,8 @@ void ProcessUploadImage::process( const HttpRequest& req, HttpResponse& resp )
 	}
 
 	//save image
-	std::string strPath, strFileName;
-	if (!getImageFilePath(imageInfo.camerId, strPath, strFileName))
+	std::string strPath = "", strFileName = "";
+	if (!getImageFilePath(imageInfo.camerId, strPath, strFileName) || strPath.empty() || strFileName.empty())
 	{
 		CLogger::instance()->write_log(LOG_LEVEL_ERR, "uploadImage:生成图片路径失败:%s", imageInfo.camerId.c_str());
 		respJson["code"] = 1;
@@ -46,7 +46,7 @@ void ProcessUploadImage::process( const HttpRequest& req, HttpResponse& resp )
 		return;
 	}
 
-	if (!saveImageFile(strPath, strFileName, imageInfo.imageStr))
+	if (!saveImageFile(strPath, strFileName, imageInfo.imageStr) || strPath.empty() || strFileName.empty())
 	{
 		CLogger::instance()->write_log(LOG_LEVEL_ERR, "uploadImage:保存本地图片失败:%s", (strPath+"/"+strFileName).c_str());
 		respJson["code"] = 1;
@@ -112,7 +112,7 @@ void ProcessUploadImage::process( const HttpRequest& req, HttpResponse& resp )
 
 	//3.动态1:N
 	DynamicOneToNReq oneToNReq;
-	oneToNReq.sourceId = imageInfo.sourceId;
+	//oneToNReq.sourceId = imageInfo.sourceId;   新版本取消souceid
 	oneToNReq.pic = imageInfo.imageStr;
 
 	AlarmParam alarmParam;
@@ -153,8 +153,6 @@ void ProcessUploadImage::process( const HttpRequest& req, HttpResponse& resp )
 		}
 		else
 		{
-			CLogger::instance()->write_log(LOG_LEVEL_INFO, "uploadImage: ALARM_THRESHOLD, req sourceID=%s, resp sourceID=%s", 
-				oneToNReq.sourceId.c_str(), oneToNResp.sourceID.c_str());
 			//比对阈值，然后入告警库
 			//4.入告警库
 			typedef list<Matche>::iterator IT;
@@ -165,13 +163,15 @@ void ProcessUploadImage::process( const HttpRequest& req, HttpResponse& resp )
 					SuspectAlarm suspectAlarm;
 					suspectAlarm.monitorId = imageInfo.sourceId;
 
-					if (!DataLayer::getFaceId(boost::lexical_cast<std::string>(it->id), suspectAlarm.faceId))
+					if (!DataLayer::getFaceId(boost::lexical_cast<std::string>(it->id), suspectAlarm.faceId)
+						|| suspectAlarm.faceId.empty())
 					{
 						CLogger::instance()->write_log(LOG_LEVEL_ERR, "uploadImage:获取faceId失败");
 						continue;
 					}
 
-					if (!DataLayer::getAlarmAddress(imageInfo.sourceId, suspectAlarm.alarmAddress))
+					if (!DataLayer::getAlarmAddress(imageInfo.sourceId, suspectAlarm.alarmAddress)
+						|| suspectAlarm.alarmAddress.empty())
 					{
 						CLogger::instance()->write_log(LOG_LEVEL_ERR, "uploadImage:获取alarmAddress失败");
 						continue;
@@ -213,8 +213,6 @@ void ProcessUploadImage::process( const HttpRequest& req, HttpResponse& resp )
 		}
 		else
 		{
-			CLogger::instance()->write_log(LOG_LEVEL_INFO, "uploadImage: CONTRAST_THRESHOLD, req sourceID=%s, resp sourceID=%s",
-				oneToNReq.sourceId.c_str(), oneToNResp.sourceID.c_str());
 			//比对阈值，然后入告警库
 			//4.入告警库
 			typedef list<Matche>::iterator IT;
@@ -225,13 +223,15 @@ void ProcessUploadImage::process( const HttpRequest& req, HttpResponse& resp )
 					SuspectAlarm suspectAlarm;
 					suspectAlarm.monitorId = imageInfo.sourceId;
 
-					if (!DataLayer::getFaceId(boost::lexical_cast<std::string>(it->id), suspectAlarm.faceId))
+					if (!DataLayer::getFaceId(boost::lexical_cast<std::string>(it->id), suspectAlarm.faceId)
+						|| suspectAlarm.faceId.empty())
 					{
 						CLogger::instance()->write_log(LOG_LEVEL_ERR, "uploadImage:获取faceId失败");
 						continue;
 					}
 
-					if (!DataLayer::getAlarmAddress(imageInfo.sourceId, suspectAlarm.alarmAddress))
+					if (!DataLayer::getAlarmAddress(imageInfo.sourceId, suspectAlarm.alarmAddress)
+						|| suspectAlarm.alarmAddress.empty())
 					{
 						CLogger::instance()->write_log(LOG_LEVEL_ERR, "uploadImage:获取alarmAddress失败");
 						continue;
@@ -262,11 +262,12 @@ void ProcessUploadImage::process( const HttpRequest& req, HttpResponse& resp )
 
 bool ProcessUploadImage::getImageFilePath(const std::string& camerCode, std::string & strPath, std::string & strFileName)
 {
-	std::string strRegionCode;
-	std::string strAreaCode;
-	std::string strLocationCode;
+	std::string strRegionCode = "";
+	std::string strAreaCode = "";
+	std::string strLocationCode = "";
 
-	if (!DataLayer::getImageFilePathInfo(camerCode, strRegionCode, strAreaCode, strLocationCode))
+	if (!DataLayer::getImageFilePathInfo(camerCode, strRegionCode, strAreaCode, strLocationCode)
+		|| "" == strRegionCode || "" == strAreaCode || "" == strLocationCode)
 	{
 		return false;
 	}

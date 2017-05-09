@@ -381,16 +381,16 @@ bool CJsonParser::parseDynamicOneToNResp( const std::string& strJson, DynamicOne
 			dynamicOneToNResp.errorMsg = "动态一比Ncode返回为空！";
 			return false;
 		}
-		//sourceID
-		if (value["sourceID"] != Json::Value::null)
-		{
-			dynamicOneToNResp.sourceID = value["sourceID"].asCString();
-		}
-		else
-		{
-			dynamicOneToNResp.errorMsg = "动态一比N sourceID is 空！";
-			return false;
-		}
+		////sourceID
+		//if (value["sourceID"] != Json::Value::null)
+		//{
+		//	dynamicOneToNResp.sourceID = value["sourceID"].asCString();
+		//}
+		//else
+		//{
+		//	dynamicOneToNResp.errorMsg = "动态一比N sourceID is 空！";
+		//	return false;
+		//}
 		//listMatches
 		if (value["listMatches"] != Json::Value::null)
 		{
@@ -405,7 +405,7 @@ bool CJsonParser::parseDynamicOneToNResp( const std::string& strJson, DynamicOne
 				Matche match;
 				match.id = matchArray[i]["id"].asInt();
 				match.score = matchArray[i]["score"].asFloat();
-				match.sourceId = dynamicOneToNResp.sourceID;
+				//match.sourceId = dynamicOneToNResp.sourceID;
 				dynamicOneToNResp.listMatches.push_back(match);
 			}
 		}

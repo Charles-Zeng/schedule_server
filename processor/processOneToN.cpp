@@ -1,5 +1,6 @@
 #include "processOneToN.h"
-
+//#include <sys/time.h>
+#include <iostream>
 #include <json/jsonParser.h>
 #include <templateServer/templateServerProxy.h>
 
@@ -7,7 +8,6 @@ void ProcessOneToN::process( const HttpRequest& req, HttpResponse& resp )
 {
 	Json::Value respJson;
 	OneToNInfo oneToNInfo;
-
 	if (!CJsonParser::parseOneToN(req.httpBody, oneToNInfo))
 	{
 		CLogger::instance()->write_log(LOG_LEVEL_ERR, "oneToN: 解析包体json失败. body: %s", req.httpBody.c_str());
@@ -29,6 +29,10 @@ void ProcessOneToN::process( const HttpRequest& req, HttpResponse& resp )
 		return;
 	}
 	*/
+	////测试耗时长
+	//timeval start_tv, end_tv;
+	//gettimeofday(&start_tv, NULL);
+	//printf("millisecond:%ld\n", start_tv.tv_sec * 1000 + start_tv.tv_usec / 1000);  //毫秒
 	OneToNResp oneToNResp;
 	if (!TemplateServerProxy::oneToN(oneToNInfo, oneToNResp))
 	{
@@ -39,6 +43,10 @@ void ProcessOneToN::process( const HttpRequest& req, HttpResponse& resp )
 		resp.httpBody = respJson.toStyledString().c_str();
 		return;
 	}
+	//gettimeofday(&end_tv, NULL);
+	//printf("millisecond:%ld\n", end_tv.tv_sec * 1000 + end_tv.tv_usec / 1000);  //毫秒
+	//int timeuse = 1000000 * (end_tv.tv_sec - start_tv.tv_sec) + end_tv.tv_usec - start_tv.tv_usec;
+	//printf("time: %d us\n", timeuse);
 
 	respJson["code"] = HTTP_SUCCESS;
 	respJson["message"] = "success";

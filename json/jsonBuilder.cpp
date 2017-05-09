@@ -93,7 +93,7 @@ std::string CJsonBuilder::buildDynamicOneToN(const DynamicOneToNReq& dynamicOneT
 {
 	Json::Value value;
 
-	value["sourceID"] = dynamicOneToNReq.sourceId.c_str();
+	//value["sourceID"] = dynamicOneToNReq.sourceId.c_str();  ³ýµôsourceid
 	value["threshold"] = boost::lexical_cast<float>(dynamicOneToNReq.threshold);
 	value["count"] = boost::lexical_cast<int>(dynamicOneToNReq.count);
 	value["groupIds"] = dynamicOneToNReq.groupIds.c_str();
